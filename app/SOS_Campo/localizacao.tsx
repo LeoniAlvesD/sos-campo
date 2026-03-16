@@ -100,8 +100,11 @@ export default function LocalizacaoScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.pageTitle}>Marcar Localização</Text>
+      <View style={styles.header}>
+        <Text style={styles.pageTitle}>Marcar Localização</Text>
+      </View>
 
+      <View style={styles.content}>
       <TouchableOpacity
         style={[styles.primaryButton, loading && styles.buttonDisabled]}
         onPress={getCurrentLocation}
@@ -198,6 +201,7 @@ export default function LocalizacaoScreen() {
           onClose={() => setShareModalVisible(false)}
         />
       )}
+      </View>
     </View>
   );
 }
@@ -205,16 +209,31 @@ export default function LocalizacaoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+
+  header: {
+    backgroundColor: theme.colors.primary,
     paddingHorizontal: 20,
     paddingTop: 20,
-    backgroundColor: '#F8FAFC',
+    paddingBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
 
   pageTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 20,
+    color: '#FFFFFF',
   },
 
   primaryButton: {
