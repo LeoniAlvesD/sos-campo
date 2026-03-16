@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
+import { createTable, deleteLocation, getLocations, insertLocation } from '@/hooks/useLocationDatabase';
 import * as Location from 'expo-location';
-import { createTable, insertLocation, getLocations, deleteLocation } from '@/hooks/useLocationDatabase';
+import React, { useEffect, useState } from 'react';
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function LocalizacaoScreen() {
-  const [location, setLocation] = useState<any>(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [locations, setLocations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // Inicializar banco de dados
   useEffect(() => {
     initializeDatabase();
-    requestLocationPermission();
   }, []);
 
   const initializeDatabase = async () => {
@@ -18,121 +19,147 @@ export default function LocalizacaoScreen() {
       await createTable();
       loadLocations();
     } catch (error) {
-      console.error('Erro ao inicializar banco de dados:', error);
+      console.error('Erro ao inicializar banco:', error);
     }
   };
 
-  const requestLocationPermission = async () => {
+  // Carregar localizações salvas
+  const loadLocations = async () => {
     try {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permissão negada', 'Precisamos de acesso à sua localização');
-        return;
-      }
+      const savedLocations = await getLocations();
+      setLocations(savedLocations);
     } catch (error) {
-      console.error('Erro ao solicitar permissão:', error);
+      console.error('Erro ao carregar localizações:', error);
     }
   };
 
-  const markCurrentLocation = async () => {
+  // Obter localização atual
+  const getCurrentLocation = async () => {
     setLoading(true);
     try {
-      let currentLocation = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = currentLocation.coords;
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status !== 'granted') {
+        setErrorMsg('Permissão para acessar localização foi negada');
+        setLoading(false);
+        return;
+      }
+
+      const currentLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
 
       setLocation(currentLocation);
+      setErrorMsg(null);
+
+      // Salvar no banco de dados
+      await saveLocation(currentLocation);
       
-      const timestamp = new Date().toLocaleString('pt-BR');
-      await insertLocation(timestamp, latitude, longitude);
-      
-      Alert.alert('✅ Localização marcada!', `Latitude: ${latitude.toFixed(4)}\nLongitude: ${longitude.toFixed(4)}`);
-      
-      loadLocations();
     } catch (error) {
-      Alert.alert('❌ Erro', 'Não foi possível obter sua localização');
+      setErrorMsg('Erro ao obter localização');
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadLocations = async () => {
+  // Salvar localização no banco
+  const saveLocation = async (loc: Location.LocationObject) => {
     try {
-      const locationsData = await getLocations();
-      setLocations(locationsData || []);
+      const timestamp = new Date().toISOString();
+      await insertLocation(
+        loc.coords.latitude,
+        loc.coords.longitude,
+        loc.coords.accuracy || 0,
+        timestamp
+      );
+      loadLocations();
+      Alert.alert('Sucesso', 'Localização salva com sucesso!');
     } catch (error) {
-      console.error('Erro ao carregar localizações:', error);
-      setLocations([]);
+      Alert.alert('Erro', 'Não foi possível salvar a localização');
+      console.error(error);
     }
   };
 
-  const handleDeleteLocation = async (id: number) => {
+  // Deletar localização
+  const deleteLocationRecord = async (id: number) => {
     try {
       await deleteLocation(id);
-      Alert.alert('✅ Deletado', 'Localização removida com sucesso');
       loadLocations();
+      Alert.alert('Sucesso', 'Localização removida!');
     } catch (error) {
-      Alert.alert('❌ Erro', 'Não foi possível deletar a localização');
+      Alert.alert('Erro', 'Não foi possível remover a localização');
     }
   };
-
-  const renderLocationItem = ({ item }: { item: any }) => (
-    <View style={styles.locationItem}>
-      <View style={styles.locationInfo}>
-        <Text style={styles.locationName}>{item.name}</Text>
-        <Text style={styles.locationCoords}>
-          📍 {item.latitude.toFixed(4)}, {item.longitude.toFixed(4)}
-        </Text>
-      </View>
-      <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => handleDeleteLocation(item.id)}
-      >
-        <Text style={styles.deleteButtonText}>Deletar</Text>
-      </TouchableOpacity>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>📍 Marcador de Localização Offline</Text>
+      <Text style={styles.title}>📍 Localização de Emergência</Text>
 
+      {/* Botão para obter localização */}
+      <TouchableOpacity 
+        style={[styles.button, loading && styles.buttonDisabled]}
+        onPress={getCurrentLocation}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? '⏳ Obtendo localização...' : '🔍 Obter Minha Localização'}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Exibir localização atual */}
       {location && (
-        <View style={styles.currentLocationBox}>
-          <Text style={styles.currentLocationTitle}>Localização Atual:</Text>
-          <Text style={styles.currentLocationText}>
-            Lat: {location.coords.latitude.toFixed(6)}
+        <View style={styles.locationBox}>
+          <Text style={styles.locationTitle}>📌 Sua Localização Atual:</Text>
+          <Text style={styles.locationText}>
+            Latitude: {location.coords.latitude.toFixed(6)}
           </Text>
-          <Text style={styles.currentLocationText}>
-            Long: {location.coords.longitude.toFixed(6)}
+          <Text style={styles.locationText}>
+            Longitude: {location.coords.longitude.toFixed(6)}
+          </Text>
+          <Text style={styles.locationText}>
+            Precisão: {location.coords.accuracy?.toFixed(2)}m
           </Text>
         </View>
       )}
 
-      <TouchableOpacity
-        style={[styles.markButton, loading && styles.markButtonDisabled]}
-        onPress={markCurrentLocation}
-        disabled={loading}
-      >
-        <Text style={styles.markButtonText}>
-          {loading ? 'Obtendo localização...' : '📌 Marcar Localização Atual'}
-        </Text>
-      </TouchableOpacity>
-
-      <Text style={styles.historyTitle}>
-        Histórico ({locations.length})
-      </Text>
-
-      {locations.length > 0 ? (
-        <FlatList
-          data={locations}
-          renderItem={renderLocationItem}
-          keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
-          scrollEnabled={true}
-        />
-      ) : (
-        <Text style={styles.emptyText}>Nenhuma localização marcada</Text>
+      {/* Mensagem de erro */}
+      {errorMsg && (
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>⚠️ {errorMsg}</Text>
+        </View>
       )}
+
+      {/* Lista de localizações salvas */}
+      <Text style={styles.subtitle}>📋 Histórico de Localizações:</Text>
+      <FlatList
+        data={locations}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.locationItem}>
+            <View style={styles.itemContent}>
+              <Text style={styles.itemTitle}>
+                📍 {item.latitude.toFixed(6)}, {item.longitude.toFixed(6)}
+              </Text>
+              <Text style={styles.itemSubtitle}>
+                Precisão: {item.accuracy.toFixed(2)}m
+              </Text>
+              <Text style={styles.itemTime}>
+                {new Date(item.timestamp).toLocaleString('pt-BR')}
+              </Text>
+            </View>
+            <TouchableOpacity 
+              style={styles.deleteButton}
+              onPress={() => deleteLocationRecord(item.id)}
+            >
+              <Text style={styles.deleteButtonText}>🗑️</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>Nenhuma localização salva ainda</Text>
+        }
+      />
     </View>
   );
 }
@@ -140,96 +167,112 @@ export default function LocalizacaoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 20,
     backgroundColor: '#f5f5f5',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#333',
-  },
-  currentLocationBox: {
-    backgroundColor: '#e3f2fd',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-    borderLeftWidth: 4,
-    borderLeftColor: '#2196F3',
-  },
-  currentLocationTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1976D2',
-    marginBottom: 8,
-  },
-  currentLocationText: {
-    fontSize: 13,
-    color: '#333',
-    marginBottom: 4,
-    fontFamily: 'monospace',
-  },
-  markButton: {
-    backgroundColor: '#2196F3',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    alignItems: 'center',
     marginBottom: 20,
-    elevation: 3,
+    color: 'rgb(135, 14, 93)',
+    textAlign: 'center',
   },
-  markButtonDisabled: {
-    backgroundColor: '#90CAF9',
+  subtitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 20,
+    marginBottom: 10,
+    color: '#333',
   },
-  markButtonText: {
+  button: {
+    backgroundColor: '#880959',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
-  historyTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 12,
-  },
-  locationItem: {
-    flexDirection: 'row',
+  locationBox: {
     backgroundColor: '#fff',
-    padding: 12,
-    marginBottom: 8,
-    borderRadius: 8,
-    alignItems: 'center',
-    elevation: 2,
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    borderLeftWidth: 4,
+    borderLeftColor: '#4CAF50',
   },
-  locationInfo: {
-    flex: 1,
-  },
-  locationName: {
-    fontSize: 14,
-    fontWeight: '500',
+  locationTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
     color: '#333',
-    marginBottom: 4,
   },
-  locationCoords: {
-    fontSize: 12,
+  locationText: {
+    fontSize: 14,
+    marginVertical: 5,
     color: '#666',
     fontFamily: 'monospace',
   },
+  errorBox: {
+    backgroundColor: '#ffebee',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    borderLeftWidth: 4,
+    borderLeftColor: '#f44336',
+  },
+  errorText: {
+    color: '#c62828',
+    fontSize: 14,
+  },
+  locationItem: {
+    backgroundColor: '#fff',
+    padding: 15,
+    marginBottom: 10,
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderLeftWidth: 3,
+    borderLeftColor: '#2196F3',
+  },
+  itemContent: {
+    flex: 1,
+  },
+  itemTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+    fontFamily: 'monospace',
+  },
+  itemSubtitle: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 5,
+  },
+  itemTime: {
+    fontSize: 11,
+    color: '#999',
+    marginTop: 5,
+  },
   deleteButton: {
-    backgroundColor: '#f44336',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
+    padding: 10,
+    backgroundColor: '#ffebee',
+    borderRadius: 5,
   },
   deleteButtonText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 18,
   },
   emptyText: {
     textAlign: 'center',
     color: '#999',
-    fontSize: 14,
     marginTop: 20,
+    fontSize: 14,
   },
 });

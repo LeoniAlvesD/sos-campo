@@ -19,7 +19,7 @@ export default function Home() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-
+        {/* Header */}
         <View style={styles.header}>
           <Image
             source={require('../../assets/images/logo.png')}
@@ -34,6 +34,7 @@ export default function Home() {
           </Text>
         </View>
 
+        {/* Botões Principais */}
         <View style={styles.buttonsContainer}>
 
           <Pressable
@@ -77,19 +78,20 @@ export default function Home() {
               Avalie seu índice de massa corporal
             </Text>
           </Pressable>
+
           <Pressable
-      style={({ pressed }) => [
-          styles.button,
-          styles.location,
-          pressed && styles.buttonPressed
-          ]}
-  onPress={() => router.push('/SOS_Campo/localizacao')}
->
-  <Text style={styles.buttonTitle}>📍 Marcar Localização</Text>
-  <Text style={styles.buttonDescription}>
-    Registre sua posição GPS offline
-  </Text>
-</Pressable>
+            style={({ pressed }) => [
+              styles.button,
+              styles.location,
+              pressed && styles.buttonPressed
+            ]}
+            onPress={() => router.push('/SOS_Campo/localizacao')}
+          >
+            <Text style={styles.buttonTitle}>Marcar Localização</Text>
+            <Text style={styles.buttonDescription}>
+              Registre sua posição GPS
+            </Text>
+          </Pressable>
 
         </View>
 
@@ -114,11 +116,9 @@ export default function Home() {
 
       </ScrollView>
     </SafeAreaView>
-  );
-}
+  );}
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     backgroundColor: '#f2f4f7',
@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     marginTop: 16,
+    color: '#1f2937',
   },
 
   subtitle: {
@@ -222,6 +223,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#1f7a3f',
     marginBottom: 8,
-  },
-
-});
+    fontWeight: '500',
+  },});
