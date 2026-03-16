@@ -1,3 +1,4 @@
+import ShareLocationModal from '@/components/ShareLocationModal';
 import { createTable, deleteLocation, getLocations, insertLocation } from '@/hooks/useLocationDatabase';
 import * as Location from 'expo-location';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -7,6 +8,8 @@ export default function LocalizacaoScreen() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [locations, setLocations] = useState<{ id: number; latitude: number; longitude: number; accuracy: number | null; timestamp: string }[]>([]);
   const [loading, setLoading] = useState(false);
+  const [shareModalVisible, setShareModalVisible] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<{ latitude: number; longitude: number; accuracy?: number } | null>(null);
 
   // Carregar localizações salvas
   const loadLocations = useCallback(async () => {
@@ -67,19 +70,45 @@ export default function LocalizacaoScreen() {
 
   // Deletar localização
   const deleteLocationRecord = async (id: number) => {
-    try {
-      await deleteLocation(id);
-      Alert.alert('Sucesso', 'Localização removida!');
-      await loadLocations();
-    } catch (error) {
-      Alert.alert('Erro', 'Não foi possível remover a localização');
-      console.error(error);
-    }
+    Alert.alert(
+      'Confirmar Exclusão',
+      'Deseja remover esta localização?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Deletar',
+          onPress: async () => {
+            try {
+              await deleteLocation(id);
+              Alert.alert('Sucesso', 'Localização removida!');
+              await loadLocations();
+            } catch (error) {
+              Alert.alert('Erro', 'Não foi possível remover a localização');
+              console.error(error);
+            }
+          },
+          style: 'destructive',
+        },
+      ]
+    );
+  };
+
+  // Abrir modal de compartilhamento
+  const handleOpenShareModal = (item: any) => {
+    setSelectedLocation({
+      latitude: item.latitude,
+      longitude: item.longitude,
+      accuracy: item.accuracy,
+    });
+    setShareModalVisible(true);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Marcar Localização</Text>
+      <Text style={styles.title}>📍 Marcar Localização</Text>
 
       {/* Botão para obter localização */}
       <TouchableOpacity
@@ -88,28 +117,28 @@ export default function LocalizacaoScreen() {
         disabled={loading}
       >
         <Text style={styles.buttonText}>
-          {loading ? 'Obtendo localização...' : 'Obter Minha Localização'}
+          {loading ? '⏳ Obtendo localização...' : '🔍 Obter Minha Localização'}
         </Text>
       </TouchableOpacity>
 
       {/* Exibir localização atual */}
       {location && (
         <View style={styles.locationBox}>
-          <Text style={styles.locationTitle}>Sua Localização Atual:</Text>
+          <Text style={styles.locationTitle}>📌 Sua Localização Atual:</Text>
           <Text style={styles.locationText}>
-            Latitude: {location.coords.latitude.toFixed(6)}
+            <Text style={styles.label}>Latitude:</Text> {location.coords.latitude.toFixed(6)}
           </Text>
           <Text style={styles.locationText}>
-            Longitude: {location.coords.longitude.toFixed(6)}
+            <Text style={styles.label}>Longitude:</Text> {location.coords.longitude.toFixed(6)}
           </Text>
           <Text style={styles.locationText}>
-            Precisão: {location.coords.accuracy?.toFixed(2)}m
+            <Text style={styles.label}>Precisão:</Text> {location.coords.accuracy?.toFixed(2)}m
           </Text>
         </View>
       )}
 
       {/* Lista de localizações salvas */}
-      <Text style={styles.subtitle}>Histórico de Localizações ({locations.length}):</Text>
+      <Text style={styles.subtitle}>📋 Histórico ({locations.length}):</Text>
       <FlatList
         data={locations}
         keyExtractor={(item) => item.id.toString()}
@@ -117,7 +146,7 @@ export default function LocalizacaoScreen() {
           <View style={styles.locationItem}>
             <View style={styles.itemContent}>
               <Text style={styles.itemTitle}>
-                {item.latitude.toFixed(6)}, {item.longitude.toFixed(6)}
+                📍 {item.latitude.toFixed(6)}, {item.longitude.toFixed(6)}
               </Text>
               <Text style={styles.itemSubtitle}>
                 Precisão: {item.accuracy?.toFixed(2)}m
@@ -126,18 +155,40 @@ export default function LocalizacaoScreen() {
                 {new Date(item.timestamp).toLocaleString('pt-BR')}
               </Text>
             </View>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => deleteLocationRecord(item.id)}
-            >
-              <Text style={styles.deleteButtonText}>X</Text>
-            </TouchableOpacity>
+
+            <View style={styles.actionButtons}>
+              <TouchableOpacity
+                style={styles.shareButton}
+                onPress={() => handleOpenShareModal(item)}
+              >
+                <Text style={styles.shareButtonText}>📤</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => deleteLocationRecord(item.id)}
+              >
+                <Text style={styles.deleteButtonText}>🗑️</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
         ListEmptyComponent={
           <Text style={styles.emptyText}>Nenhuma localização salva ainda</Text>
         }
+        scrollEnabled={true}
       />
+
+      {/* Modal de Compartilhamento */}
+      {selectedLocation && (
+        <ShareLocationModal
+          visible={shareModalVisible}
+          latitude={selectedLocation.latitude}
+          longitude={selectedLocation.longitude}
+          accuracy={selectedLocation.accuracy}
+          onClose={() => setShareModalVisible(false)}
+        />
+      )}
     </View>
   );
 }
@@ -165,9 +216,13 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#2563eb',
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: 'center',
     marginBottom: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   buttonDisabled: {
     opacity: 0.6,
@@ -180,16 +235,20 @@ const styles = StyleSheet.create({
   locationBox: {
     backgroundColor: '#fff',
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 12,
     marginBottom: 15,
     borderLeftWidth: 4,
     borderLeftColor: '#4CAF50',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 5,
+    elevation: 2,
   },
   locationTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#333',
+    color: '#1f2937',
   },
   locationText: {
     fontSize: 14,
@@ -197,16 +256,24 @@ const styles = StyleSheet.create({
     color: '#666',
     fontFamily: 'monospace',
   },
+  label: {
+    fontWeight: '600',
+    color: '#333',
+  },
   locationItem: {
     backgroundColor: '#fff',
     padding: 15,
-    marginBottom: 10,
-    borderRadius: 10,
+    marginBottom: 12,
+    borderRadius: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderLeftWidth: 3,
-    borderLeftColor: '#2196F3',
+    borderLeftColor: '#0ea5e9',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 5,
+    elevation: 2,
   },
   itemContent: {
     flex: 1,
@@ -214,7 +281,7 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#1f2937',
     fontFamily: 'monospace',
   },
   itemSubtitle: {
@@ -227,20 +294,34 @@ const styles = StyleSheet.create({
     color: '#999',
     marginTop: 5,
   },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  shareButton: {
+    padding: 10,
+    backgroundColor: '#e0f2fe',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  shareButtonText: {
+    fontSize: 16,
+  },
   deleteButton: {
     padding: 10,
-    backgroundColor: '#ffebee',
-    borderRadius: 5,
+    backgroundColor: '#fee2e2',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   deleteButtonText: {
-    fontSize: 18,
-    color: '#f44336',
-    fontWeight: 'bold',
+    fontSize: 16,
   },
   emptyText: {
     textAlign: 'center',
     color: '#999',
-    marginTop: 20,
+    marginTop: 30,
     fontSize: 14,
   },
 });
