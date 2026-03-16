@@ -11,7 +11,7 @@ const initDatabase = async () => {
   return db;
 };
 
-const createTable = async () => {
+export const createTable = async () => {
   try {
     const database = await initDatabase();
     if (database) {
@@ -30,7 +30,7 @@ const createTable = async () => {
   }
 };
 
-const insertLocation = async (
+export const insertLocation = async (
   latitude: number,
   longitude: number,
   accuracy: number | null,
@@ -50,7 +50,7 @@ const insertLocation = async (
   }
 };
 
-const getLocations = async (): Promise<{
+export const getLocations = async (): Promise<{
   id: number;
   latitude: number;
   longitude: number;
@@ -76,7 +76,7 @@ const getLocations = async (): Promise<{
   }
 };
 
-const deleteLocation = async (id: number) => {
+export const deleteLocation = async (id: number) => {
   try {
     const database = await initDatabase();
     if (database) {
@@ -87,5 +87,3 @@ const deleteLocation = async (id: number) => {
     throw error;
   }
 };
-
-export { createTable, deleteLocation, getLocations, insertLocation };
