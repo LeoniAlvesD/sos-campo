@@ -4,8 +4,8 @@ import * as Location from 'expo-location';
 import { createTable, insertLocation, getLocations, deleteLocation } from '@/hooks/useLocationDatabase';
 
 export default function LocalizacaoScreen() {
-  const [location, setLocation] = useState(null);
-  const [locations, setLocations] = useState([]);
+  const [location, setLocation] = useState<any>(null);
+  const [locations, setLocations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -59,13 +59,14 @@ export default function LocalizacaoScreen() {
   const loadLocations = async () => {
     try {
       const locationsData = await getLocations();
-      setLocations(Array.from(locationsData));
+      setLocations(locationsData || []);
     } catch (error) {
       console.error('Erro ao carregar localizações:', error);
+      setLocations([]);
     }
   };
 
-  const handleDeleteLocation = async (id) => {
+  const handleDeleteLocation = async (id: number) => {
     try {
       await deleteLocation(id);
       Alert.alert('✅ Deletado', 'Localização removida com sucesso');
@@ -75,7 +76,7 @@ export default function LocalizacaoScreen() {
     }
   };
 
-  const renderLocationItem = ({ item }) => (
+  const renderLocationItem = ({ item }: { item: any }) => (
     <View style={styles.locationItem}>
       <View style={styles.locationInfo}>
         <Text style={styles.locationName}>{item.name}</Text>

@@ -13,31 +13,41 @@ const initDatabase = async () => {
 
 const createTable = async () => {
   const database = await initDatabase();
-  await database?.execAsync(
-    'CREATE TABLE IF NOT EXISTS locations (' +
-    'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-    'name TEXT NOT NULL, ' +
-    'latitude REAL NOT NULL, ' +
-    'longitude REAL NOT NULL);'
-  );
+  if (database) {
+    await database.execAsync(
+      'CREATE TABLE IF NOT EXISTS locations (' +
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+      'name TEXT NOT NULL, ' +
+      'latitude REAL NOT NULL, ' +
+      'longitude REAL NOT NULL);'
+    );
+  }
 };
 
 const insertLocation = async (name: string, latitude: number, longitude: number) => {
   const database = await initDatabase();
-  await database?.runAsync(
-    'INSERT INTO locations (name, latitude, longitude) VALUES (?, ?, ?)',
-    [name, latitude, longitude]
-  );
+  if (database) {
+    await database.runAsync(
+      'INSERT INTO locations (name, latitude, longitude) VALUES (?, ?, ?)',
+      [name, latitude, longitude]
+    );
+  }
 };
 
-const getLocations = async () => {
+const getLocations = async (): Promise<any[]> => {
   const database = await initDatabase();
-  return await database?.getAllAsync('SELECT * FROM locations');
+  if (database) {
+    const result = await database.getAllAsync<any>('SELECT * FROM locations');
+    return result || [];
+  }
+  return [];
 };
 
 const deleteLocation = async (id: number) => {
   const database = await initDatabase();
-  await database?.runAsync('DELETE FROM locations WHERE id = ?', [id]);
+  if (database) {
+    await database.runAsync('DELETE FROM locations WHERE id = ?', [id]);
+  }
 };
 
 export { createTable, insertLocation, getLocations, deleteLocation };
