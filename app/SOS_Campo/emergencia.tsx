@@ -1,5 +1,6 @@
+import LocationShare from '@/components/LocationShare';
+import { theme } from '@/constants/theme';
 import {
-  Dimensions,
   Linking,
   Pressable,
   ScrollView,
@@ -8,37 +9,29 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LocationShare from '@/components/LocationShare';
 
-const { width } = Dimensions.get('window');
+interface EmergencyCardProps {
+  label: string;
+  title: string;
+  number: string;
+  displayNumber?: string;
+  color: string;
+  stripe?: boolean;
+}
 
-export default function Emergencia() {
-  const ligar = (numero: string) => {
-    Linking.openURL(`tel:${numero}`);
-  };
+function EmergencyCard({ label, title, number, displayNumber, color, stripe }: EmergencyCardProps) {
+  const ligar = () => Linking.openURL(`tel:${number}`);
 
-  const Card = ({
-    label,
-    title,
-    number,
-    displayNumber,
-    style,
-    stripe,
-  }: {
-    label: string;
-    title: string;
-    number: string;
-    displayNumber?: string;
-    style: any;
-    stripe?: boolean;
-  }) => (
+  return (
     <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`Ligar para ${title}, número ${displayNumber ?? number}`}
       style={({ pressed }) => [
         styles.card,
-        style,
+        { backgroundColor: color },
         pressed && styles.pressed,
       ]}
-      onPress={() => ligar(number)}
+      onPress={ligar}
     >
       {stripe && <View style={styles.prfStripeHorizontal} />}
 
@@ -47,14 +40,13 @@ export default function Emergencia() {
           <Text style={styles.cardLabel}>{label}</Text>
           <Text style={styles.cardTitle}>{title}</Text>
         </View>
-
-        <Text style={styles.cardNumber}>
-          {displayNumber ?? number}
-        </Text>
+        <Text style={styles.cardNumber}>{displayNumber ?? number}</Text>
       </View>
     </Pressable>
   );
+}
 
+export default function Emergencia() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -66,41 +58,37 @@ export default function Emergencia() {
         </View>
 
         <View style={styles.cardsContainer}>
-          <Card
+          <EmergencyCard
             label="Atendimento Médico"
             title="SAMU"
             number="192"
-            style={styles.samu}
+            color="#c62828"
           />
-
-          <Card
+          <EmergencyCard
             label="Resgate e Incêndio"
             title="Bombeiros"
             number="193"
-            style={styles.bombeiros}
+            color="#ef6c00"
           />
-
-          <Card
+          <EmergencyCard
             label="Segurança Pública"
             title="Polícia Militar"
             number="190"
-            style={styles.policiaMilitar}
+            color="#0d47a1"
           />
-
-          <Card
+          <EmergencyCard
             label="Rodovias Federais"
             title="Polícia Rodoviária Federal"
             number="191"
-            style={styles.prf}
+            color="#0b2e59"
             stripe
           />
-
-          <Card
+          <EmergencyCard
             label="Disque-Intoxicação"
             title="ANVISA"
             number="08007226001"
             displayNumber="0800 722 6001"
-            style={styles.intoxicacao}
+            color="#6a1b9a"
           />
         </View>
 
@@ -119,43 +107,41 @@ export default function Emergencia() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f6f8',
-    paddingHorizontal: 24,
-    paddingTop: 30,
+    backgroundColor: theme.colors.background,
+    paddingHorizontal: theme.spacing.lg,
+    paddingTop: theme.spacing.xl,
   },
 
   header: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: theme.spacing.xl,
   },
 
   title: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: theme.font.title,
+    fontWeight: theme.fontWeights.bold,
+    color: theme.colors.text,
   },
 
   subtitle: {
-    marginTop: 8,
-    fontSize: 14,
-    color: '#6b7280',
+    marginTop: theme.spacing.sm,
+    fontSize: theme.font.small,
+    color: theme.colors.muted,
   },
 
   cardsContainer: {
-    gap: 18,
+    gap: theme.spacing.md + 2,
   },
 
   card: {
     width: '100%',
-    minHeight: width * 0.28,
-    borderRadius: 22,
-    padding: 24,
+    minHeight: theme.spacing.xxl + theme.spacing.xxl, // 80pt touch-friendly height
+    borderRadius: theme.radius.lg,
+    padding: theme.spacing.lg,
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 6,
     position: 'relative',
     overflow: 'hidden',
+    ...theme.shadow.md,
   },
 
   cardContent: {
@@ -166,7 +152,7 @@ const styles = StyleSheet.create({
 
   textContainer: {
     flex: 1,
-    paddingRight: 16,
+    paddingRight: theme.spacing.md,
   },
 
   pressed: {
@@ -175,44 +161,22 @@ const styles = StyleSheet.create({
   },
 
   cardLabel: {
-    color: '#ffffffcc',
-    fontSize: 12,
-    marginBottom: 6,
+    color: 'rgba(255,255,255,0.75)',
+    fontSize: theme.font.small,
+    marginBottom: theme.spacing.xs,
   },
 
   cardTitle: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
+    color: theme.colors.inverse,
+    fontSize: theme.font.md,
+    fontWeight: theme.fontWeights.semibold,
   },
 
   cardNumber: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: '700',
+    color: theme.colors.inverse,
+    fontSize: theme.font.xl,
+    fontWeight: theme.fontWeights.bold,
     textAlign: 'right',
-  },
-
-  /* CORES */
-
-  samu: {
-    backgroundColor: '#c62828',
-  },
-
-  bombeiros: {
-    backgroundColor: '#ef6c00',
-  },
-
-  policiaMilitar: {
-    backgroundColor: '#0d47a1',
-  },
-
-  prf: {
-    backgroundColor: '#0b2e59',
-  },
-
-  intoxicacao: {
-    backgroundColor: '#6a1b9a',
   },
 
   prfStripeHorizontal: {
@@ -220,23 +184,26 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 12,
+    height: 10,
     backgroundColor: '#f5c518',
   },
 
   locationSection: {
-    marginTop: 24,
-    marginBottom: 12,
+    marginTop: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
   },
+
   locationSectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#333',
-    marginBottom: 4,
+    fontSize: theme.font.subtitle,
+    fontWeight: theme.fontWeights.bold,
+    color: theme.colors.text,
+    marginBottom: theme.spacing.xs,
   },
+
   locationSectionSubtitle: {
-    fontSize: 13,
-    color: '#6b7280',
-    marginBottom: 4,
+    fontSize: theme.font.small,
+    color: theme.colors.muted,
+    marginBottom: theme.spacing.xs,
+    lineHeight: theme.lineHeights.normal,
   },
 });

@@ -1,19 +1,18 @@
 import { acidentes } from '@/constants/acidentes';
+import { theme } from '@/constants/theme';
+import { useResponsive } from '@/hooks/useResponsive';
 import { router } from 'expo-router';
 import {
-  Dimensions,
   FlatList,
   Pressable,
   StyleSheet,
   Text,
-  View
+  View,
 } from 'react-native';
 
-const { width, height } = Dimensions.get('window');
-
-const scale = (size: number) => (width / 375) * size;
-
 export default function Acidentes() {
+  const { scale } = useResponsive();
+
   return (
     <FlatList
       data={acidentes}
@@ -22,6 +21,8 @@ export default function Acidentes() {
       contentContainerStyle={styles.container}
       renderItem={({ item }) => (
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Ver detalhes de ${item.nome}`}
           style={({ pressed }) => [
             styles.card,
             pressed && styles.cardPressed,
@@ -29,16 +30,13 @@ export default function Acidentes() {
           onPress={() => router.push(`/acidente/${item.id}`)}
         >
           <View style={styles.textContainer}>
-            <Text style={styles.title}>
-              {item.nome}
-            </Text>
-
+            <Text style={styles.title}>{item.nome}</Text>
             <Text style={styles.description} numberOfLines={2}>
               {item.descricao}
             </Text>
           </View>
 
-          <View style={styles.arrowContainer}>
+          <View style={[styles.arrowContainer, { width: scale(40), height: scale(40), borderRadius: scale(20) }]}>
             <Text style={styles.arrow}>›</Text>
           </View>
         </Pressable>
@@ -48,29 +46,24 @@ export default function Acidentes() {
 }
 
 const styles = StyleSheet.create({
-
   container: {
-    paddingHorizontal: width * 0.06,
-    paddingTop: height * 0.05, // 👈 espaço bonito no topo
-    paddingBottom: height * 0.06,
-    backgroundColor: '#f2f4f7',
+    paddingHorizontal: theme.spacing.lg,
+    paddingTop: theme.spacing.xl,
+    paddingBottom: theme.spacing.xxl,
+    backgroundColor: theme.colors.background,
   },
 
   card: {
-    backgroundColor: '#ffffff',
-    borderRadius: scale(22),
-    paddingVertical: scale(22),
-    paddingHorizontal: scale(20),
-    marginBottom: scale(18),
-
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.radius.lg,
+    paddingVertical: theme.spacing.lg - 2,
+    paddingHorizontal: theme.spacing.md,
+    marginBottom: theme.spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 15,
-    elevation: 5,
+    minHeight: theme.minTouchSize,
+    ...theme.shadow.card,
   },
 
   cardPressed: {
@@ -80,35 +73,31 @@ const styles = StyleSheet.create({
 
   textContainer: {
     flex: 1,
-    paddingRight: scale(12),
+    paddingRight: theme.spacing.md,
   },
 
   title: {
-    fontSize: scale(18),
-    fontWeight: '700',
-    marginBottom: scale(6),
-    color: '#111827',
+    fontSize: theme.font.md,
+    fontWeight: theme.fontWeights.bold,
+    marginBottom: theme.spacing.xs,
+    color: theme.colors.text,
   },
 
   description: {
-    fontSize: scale(14),
-    color: '#6b7280',
-    lineHeight: scale(20),
+    fontSize: theme.font.small,
+    color: theme.colors.muted,
+    lineHeight: theme.lineHeights.normal,
   },
 
   arrowContainer: {
-    width: scale(40),
-    height: scale(40),
-    borderRadius: scale(20),
-    backgroundColor: '#e8f0fe',
+    backgroundColor: theme.colors.infoBg,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   arrow: {
-    fontSize: scale(22),
-    color: '#0d47a1',
-    fontWeight: 'bold',
+    fontSize: 22,
+    color: theme.colors.info,
+    fontWeight: theme.fontWeights.bold,
   },
-
 });

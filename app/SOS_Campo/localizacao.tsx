@@ -1,4 +1,5 @@
 import ShareLocationModal from '@/components/ShareLocationModal';
+import { theme } from '@/constants/theme';
 import { createTable, deleteLocation, getLocations, insertLocation } from '@/hooks/useLocationDatabase';
 import * as Location from 'expo-location';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -11,7 +12,6 @@ export default function LocalizacaoScreen() {
   const [shareModalVisible, setShareModalVisible] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{ latitude: number; longitude: number; accuracy?: number } | null>(null);
 
-  // Carregar localizações salvas
   const loadLocations = useCallback(async () => {
     try {
       const savedLocations = await getLocations();
@@ -21,7 +21,6 @@ export default function LocalizacaoScreen() {
     }
   }, []);
 
-  // Inicializar banco de dados
   const initializeDatabase = useCallback(async () => {
     try {
       await createTable();
@@ -35,7 +34,6 @@ export default function LocalizacaoScreen() {
     initializeDatabase();
   }, [initializeDatabase]);
 
-  // Obter localização atual
   const getCurrentLocation = async () => {
     setLoading(true);
     try {
@@ -53,7 +51,6 @@ export default function LocalizacaoScreen() {
 
       setLocation(currentLocation);
 
-      // Salvar no banco de dados
       const { latitude, longitude, accuracy } = currentLocation.coords;
       const timestamp = new Date().toISOString();
       await insertLocation(latitude, longitude, accuracy || 0, timestamp);
@@ -68,16 +65,12 @@ export default function LocalizacaoScreen() {
     }
   };
 
-  // Deletar localização
   const deleteLocationRecord = async (id: number) => {
     Alert.alert(
       'Confirmar Exclusão',
       'Deseja remover esta localização?',
       [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
+        { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Deletar',
           onPress: async () => {
@@ -96,12 +89,11 @@ export default function LocalizacaoScreen() {
     );
   };
 
-  // Abrir modal de compartilhamento
-  const handleOpenShareModal = (item: any) => {
+  const handleOpenShareModal = (item: { latitude: number; longitude: number; accuracy?: number | null }) => {
     setSelectedLocation({
       latitude: item.latitude,
       longitude: item.longitude,
-      accuracy: item.accuracy,
+      accuracy: item.accuracy ?? undefined,
     });
     setShareModalVisible(true);
   };
@@ -110,35 +102,39 @@ export default function LocalizacaoScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>📍 Marcar Localização</Text>
 
-      {/* Botão para obter localização */}
       <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
         onPress={getCurrentLocation}
         disabled={loading}
+        accessibilityRole="button"
+        accessibilityLabel={loading ? 'Obtendo localização' : 'Obter minha localização'}
+        accessibilityState={{ busy: loading, disabled: loading }}
       >
         <Text style={styles.buttonText}>
           {loading ? '⏳ Obtendo localização...' : '🔍 Obter Minha Localização'}
         </Text>
       </TouchableOpacity>
 
-      {/* Exibir localização atual */}
       {location && (
         <View style={styles.locationBox}>
           <Text style={styles.locationTitle}>📌 Sua Localização Atual:</Text>
           <Text style={styles.locationText}>
-            <Text style={styles.label}>Latitude:</Text> {location.coords.latitude.toFixed(6)}
+            <Text style={styles.coordLabel}>Latitude:</Text>{' '}
+            {location.coords.latitude.toFixed(6)}
           </Text>
           <Text style={styles.locationText}>
-            <Text style={styles.label}>Longitude:</Text> {location.coords.longitude.toFixed(6)}
+            <Text style={styles.coordLabel}>Longitude:</Text>{' '}
+            {location.coords.longitude.toFixed(6)}
           </Text>
           <Text style={styles.locationText}>
-            <Text style={styles.label}>Precisão:</Text> {location.coords.accuracy?.toFixed(2)}m
+            <Text style={styles.coordLabel}>Precisão:</Text>{' '}
+            {location.coords.accuracy?.toFixed(2)}m
           </Text>
         </View>
       )}
 
-      {/* Lista de localizações salvas */}
       <Text style={styles.subtitle}>📋 Histórico ({locations.length}):</Text>
+
       <FlatList
         data={locations}
         keyExtractor={(item) => item.id.toString()}
@@ -160,6 +156,8 @@ export default function LocalizacaoScreen() {
               <TouchableOpacity
                 style={styles.shareButton}
                 onPress={() => handleOpenShareModal(item)}
+                accessibilityRole="button"
+                accessibilityLabel="Compartilhar localização"
               >
                 <Text style={styles.shareButtonText}>📤</Text>
               </TouchableOpacity>
@@ -167,6 +165,8 @@ export default function LocalizacaoScreen() {
               <TouchableOpacity
                 style={styles.deleteButton}
                 onPress={() => deleteLocationRecord(item.id)}
+                accessibilityRole="button"
+                accessibilityLabel="Excluir localização"
               >
                 <Text style={styles.deleteButtonText}>🗑️</Text>
               </TouchableOpacity>
@@ -179,7 +179,6 @@ export default function LocalizacaoScreen() {
         scrollEnabled={true}
       />
 
-      {/* Modal de Compartilhamento */}
       {selectedLocation && (
         <ShareLocationModal
           visible={shareModalVisible}
@@ -196,132 +195,149 @@ export default function LocalizacaoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
+    padding: theme.spacing.md,
+    backgroundColor: theme.colors.background,
   },
+
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#1f7a3f',
+    fontSize: theme.font.xl,
+    fontWeight: theme.fontWeights.bold,
+    marginBottom: theme.spacing.lg,
+    color: theme.colors.primary,
     textAlign: 'center',
   },
+
   subtitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginTop: 20,
-    marginBottom: 10,
-    color: '#333',
+    fontSize: theme.font.text,
+    fontWeight: theme.fontWeights.semibold,
+    marginTop: theme.spacing.lg,
+    marginBottom: theme.spacing.sm,
+    color: theme.colors.textSecondary,
   },
+
   button: {
-    backgroundColor: '#2563eb',
-    padding: 15,
-    borderRadius: 12,
+    backgroundColor: theme.colors.action,
+    padding: theme.spacing.md - 1,
+    borderRadius: theme.radius.md,
     alignItems: 'center',
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    marginBottom: theme.spacing.md,
+    minHeight: theme.minTouchSize,
+    justifyContent: 'center',
+    ...theme.shadow.sm,
   },
+
   buttonDisabled: {
-    opacity: 0.6,
+    opacity: 0.55,
   },
+
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: theme.colors.inverse,
+    fontSize: theme.font.text,
+    fontWeight: theme.fontWeights.bold,
   },
+
   locationBox: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 15,
+    backgroundColor: theme.colors.card,
+    padding: theme.spacing.md,
+    borderRadius: theme.radius.md,
+    marginBottom: theme.spacing.md,
     borderLeftWidth: 4,
-    borderLeftColor: '#4CAF50',
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 5,
-    elevation: 2,
+    borderLeftColor: theme.colors.successBorder,
+    ...theme.shadow.sm,
   },
+
   locationTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#1f2937',
+    fontSize: theme.font.text,
+    fontWeight: theme.fontWeights.bold,
+    marginBottom: theme.spacing.sm,
+    color: theme.colors.text,
   },
+
   locationText: {
-    fontSize: 14,
-    marginVertical: 5,
-    color: '#666',
+    fontSize: theme.font.small,
+    marginVertical: theme.spacing.xxs + 1,
+    color: theme.colors.muted,
     fontFamily: 'monospace',
   },
-  label: {
-    fontWeight: '600',
-    color: '#333',
+
+  coordLabel: {
+    fontWeight: theme.fontWeights.semibold,
+    color: theme.colors.textSecondary,
   },
+
   locationItem: {
-    backgroundColor: '#fff',
-    padding: 15,
-    marginBottom: 12,
-    borderRadius: 12,
+    backgroundColor: theme.colors.card,
+    padding: theme.spacing.md,
+    marginBottom: theme.spacing.sm + 2,
+    borderRadius: theme.radius.md,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderLeftWidth: 3,
-    borderLeftColor: '#0ea5e9',
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 5,
-    elevation: 2,
+    borderLeftColor: theme.colors.info,
+    ...theme.shadow.sm,
   },
+
   itemContent: {
     flex: 1,
   },
+
   itemTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#1f2937',
+    fontSize: theme.font.small,
+    fontWeight: theme.fontWeights.bold,
+    color: theme.colors.text,
     fontFamily: 'monospace',
   },
+
   itemSubtitle: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 5,
+    fontSize: theme.font.tiny,
+    color: theme.colors.muted,
+    marginTop: theme.spacing.xs,
   },
+
   itemTime: {
-    fontSize: 11,
-    color: '#999',
-    marginTop: 5,
+    fontSize: theme.font.tiny,
+    color: theme.colors.placeholder,
+    marginTop: theme.spacing.xs,
   },
+
   actionButtons: {
     flexDirection: 'row',
-    gap: 8,
+    gap: theme.spacing.sm,
   },
+
   shareButton: {
-    padding: 10,
-    backgroundColor: '#e0f2fe',
-    borderRadius: 8,
+    padding: theme.spacing.sm + 2,
+    backgroundColor: theme.colors.infoBg,
+    borderRadius: theme.radius.sm,
     justifyContent: 'center',
     alignItems: 'center',
+    minWidth: theme.minTouchSize,
+    minHeight: theme.minTouchSize,
   },
+
   shareButtonText: {
     fontSize: 16,
   },
+
   deleteButton: {
-    padding: 10,
-    backgroundColor: '#fee2e2',
-    borderRadius: 8,
+    padding: theme.spacing.sm + 2,
+    backgroundColor: theme.colors.dangerBg,
+    borderRadius: theme.radius.sm,
     justifyContent: 'center',
     alignItems: 'center',
+    minWidth: theme.minTouchSize,
+    minHeight: theme.minTouchSize,
   },
+
   deleteButtonText: {
     fontSize: 16,
   },
+
   emptyText: {
     textAlign: 'center',
-    color: '#999',
-    marginTop: 30,
-    fontSize: 14,
+    color: theme.colors.placeholder,
+    marginTop: theme.spacing.xl,
+    fontSize: theme.font.small,
   },
 });
