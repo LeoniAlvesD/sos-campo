@@ -89,11 +89,7 @@ export default function Home() {
           >
             <Text style={styles.buttonTitle}>Marcar Localização</Text>
             <Text style={styles.buttonDescription}>
-<<<<<<< HEAD
-              Registre sua posição GPS
-=======
               Registre sua posição GPS offline
->>>>>>> 8641b9dd8730f75bed3b36c96e0fe45013467930
             </Text>
           </Pressable>
 
@@ -120,7 +116,8 @@ export default function Home() {
 
       </ScrollView>
     </SafeAreaView>
-  );}
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -228,4 +225,5 @@ const styles = StyleSheet.create({
     color: '#1f7a3f',
     marginBottom: 8,
     fontWeight: '500',
-  },});
+  },
+});

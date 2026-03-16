@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { createTable, deleteLocation, getLocations, insertLocation } from '@/hooks/useLocationDatabase';
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
@@ -6,19 +5,7 @@ import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react
 
 export default function LocalizacaoScreen() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [locations, setLocations] = useState<any[]>([]);
-=======
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert, Share, Linking } from 'react-native';
-import * as Location from 'expo-location';
-import * as Clipboard from 'expo-clipboard';
-import { createTable, insertLocation, getLocations, deleteLocation } from '@/hooks/useLocationDatabase';
-
-export default function LocalizacaoScreen() {
-  const [location, setLocation] = useState<any>(null);
   const [locations, setLocations] = useState<{ id: number; latitude: number; longitude: number; accuracy: number | null; timestamp: string }[]>([]);
->>>>>>> 8641b9dd8730f75bed3b36c96e0fe45013467930
   const [loading, setLoading] = useState(false);
 
   // Inicializar banco de dados
@@ -49,11 +36,10 @@ export default function LocalizacaoScreen() {
   const getCurrentLocation = async () => {
     setLoading(true);
     try {
-<<<<<<< HEAD
       const { status } = await Location.requestForegroundPermissionsAsync();
-      
+
       if (status !== 'granted') {
-        setErrorMsg('Permissão para acessar localização foi negada');
+        Alert.alert('Erro', 'Permissão para acessar localização foi negada');
         setLoading(false);
         return;
       }
@@ -61,51 +47,21 @@ export default function LocalizacaoScreen() {
       const currentLocation = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
       });
-=======
-      let currentLocation = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude, accuracy } = currentLocation.coords;
->>>>>>> 8641b9dd8730f75bed3b36c96e0fe45013467930
 
       setLocation(currentLocation);
-      setErrorMsg(null);
 
       // Salvar no banco de dados
-      await saveLocation(currentLocation);
-      
-<<<<<<< HEAD
-    } catch (error) {
-      setErrorMsg('Erro ao obter localização');
-=======
+      const { latitude, longitude, accuracy } = currentLocation.coords;
       const timestamp = new Date().toISOString();
-      await insertLocation(latitude, longitude, accuracy, timestamp);
-      
-      Alert.alert('Localização marcada!', `Latitude: ${latitude.toFixed(4)}\nLongitude: ${longitude.toFixed(4)}`);
-      
+      await insertLocation(latitude, longitude, accuracy || 0, timestamp);
+
+      Alert.alert('Sucesso', 'Localização marcada e salva!');
       loadLocations();
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível obter sua localização');
->>>>>>> 8641b9dd8730f75bed3b36c96e0fe45013467930
       console.error(error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Salvar localização no banco
-  const saveLocation = async (loc: Location.LocationObject) => {
-    try {
-      const timestamp = new Date().toISOString();
-      await insertLocation(
-        loc.coords.latitude,
-        loc.coords.longitude,
-        loc.coords.accuracy || 0,
-        timestamp
-      );
-      loadLocations();
-      Alert.alert('Sucesso', 'Localização salva com sucesso!');
-    } catch (error) {
-      Alert.alert('Erro', 'Não foi possível salvar a localização');
-      console.error(error);
     }
   };
 
@@ -113,107 +69,33 @@ export default function LocalizacaoScreen() {
   const deleteLocationRecord = async (id: number) => {
     try {
       await deleteLocation(id);
-<<<<<<< HEAD
-=======
-      Alert.alert('Deletado', 'Localização removida com sucesso');
->>>>>>> 8641b9dd8730f75bed3b36c96e0fe45013467930
-      loadLocations();
       Alert.alert('Sucesso', 'Localização removida!');
+      loadLocations();
     } catch (error) {
-<<<<<<< HEAD
       Alert.alert('Erro', 'Não foi possível remover a localização');
+      console.error(error);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>📍 Localização de Emergência</Text>
-=======
-      Alert.alert('Erro', 'Não foi possível deletar a localização');
-    }
-  };
-
-  const handleCopyLocation = async (latitude: number, longitude: number) => {
-    const text = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-    await Clipboard.setStringAsync(text);
-    Alert.alert('Copiado!', `Coordenadas copiadas:\n${text}`);
-  };
-
-  const handleShareLocation = async (latitude: number, longitude: number) => {
-    const coords = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-    const mapsUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
-    const message = `Localização:\n${coords}\n\nAbrir no Google Maps:\n${mapsUrl}`;
-    try {
-      await Share.share({ message, url: mapsUrl });
-    } catch {
-      Alert.alert('Erro', 'Não foi possível compartilhar a localização.');
-    }
-  };
-
-  const handleOpenMaps = (latitude: number, longitude: number) => {
-    const mapsUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
-    Linking.openURL(mapsUrl).catch(() =>
-      Alert.alert('Erro', 'Não foi possível abrir o Google Maps.')
-    );
-  };
-
-  const renderLocationItem = ({ item }: { item: { id: number; latitude: number; longitude: number; accuracy: number | null; timestamp: string } }) => (
-    <View style={styles.locationItem}>
-      <View style={styles.locationInfo}>
-        <Text style={styles.locationName}>{new Date(item.timestamp).toLocaleString('pt-BR')}</Text>
-        <Text style={styles.locationCoords}>
-          {item.latitude.toFixed(6)}, {item.longitude.toFixed(6)}
-        </Text>
-      </View>
-      <View style={styles.locationActions}>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => handleCopyLocation(item.latitude, item.longitude)}
-        >
-          <Text style={styles.actionButtonText}>Copiar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.actionButton, styles.shareButton]}
-          onPress={() => handleShareLocation(item.latitude, item.longitude)}
-        >
-          <Text style={styles.actionButtonText}>Compartilhar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.actionButton, styles.mapsButton]}
-          onPress={() => handleOpenMaps(item.latitude, item.longitude)}
-        >
-          <Text style={styles.actionButtonText}>Maps</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.actionButton, styles.deleteButton]}
-          onPress={() => handleDeleteLocation(item.id)}
-        >
-          <Text style={styles.actionButtonText}>Deletar</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Marcador de Localização Offline</Text>
->>>>>>> 8641b9dd8730f75bed3b36c96e0fe45013467930
+      <Text style={styles.title}>Marcar Localização</Text>
 
       {/* Botão para obter localização */}
-      <TouchableOpacity 
+      <TouchableOpacity
         style={[styles.button, loading && styles.buttonDisabled]}
         onPress={getCurrentLocation}
         disabled={loading}
       >
         <Text style={styles.buttonText}>
-          {loading ? '⏳ Obtendo localização...' : '🔍 Obter Minha Localização'}
+          {loading ? 'Obtendo localização...' : 'Obter Minha Localização'}
         </Text>
       </TouchableOpacity>
 
       {/* Exibir localização atual */}
       {location && (
         <View style={styles.locationBox}>
-          <Text style={styles.locationTitle}>📌 Sua Localização Atual:</Text>
+          <Text style={styles.locationTitle}>Sua Localização Atual:</Text>
           <Text style={styles.locationText}>
             Latitude: {location.coords.latitude.toFixed(6)}
           </Text>
@@ -226,41 +108,8 @@ export default function LocalizacaoScreen() {
         </View>
       )}
 
-<<<<<<< HEAD
-      {/* Mensagem de erro */}
-      {errorMsg && (
-        <View style={styles.errorBox}>
-          <Text style={styles.errorText}>⚠️ {errorMsg}</Text>
-        </View>
-=======
-      <TouchableOpacity
-        style={[styles.markButton, loading && styles.markButtonDisabled]}
-        onPress={markCurrentLocation}
-        disabled={loading}
-      >
-        <Text style={styles.markButtonText}>
-          {loading ? 'Obtendo localização...' : 'Marcar Localização Atual'}
-        </Text>
-      </TouchableOpacity>
-
-      <Text style={styles.historyTitle}>
-        Histórico ({locations.length})
-      </Text>
-
-      {locations.length > 0 ? (
-        <FlatList
-          data={locations}
-          renderItem={renderLocationItem}
-          keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
-          scrollEnabled={true}
-        />
-      ) : (
-        <Text style={styles.emptyText}>Nenhuma localização marcada</Text>
->>>>>>> 8641b9dd8730f75bed3b36c96e0fe45013467930
-      )}
-
       {/* Lista de localizações salvas */}
-      <Text style={styles.subtitle}>📋 Histórico de Localizações:</Text>
+      <Text style={styles.subtitle}>Histórico de Localizações ({locations.length}):</Text>
       <FlatList
         data={locations}
         keyExtractor={(item) => item.id.toString()}
@@ -268,20 +117,20 @@ export default function LocalizacaoScreen() {
           <View style={styles.locationItem}>
             <View style={styles.itemContent}>
               <Text style={styles.itemTitle}>
-                📍 {item.latitude.toFixed(6)}, {item.longitude.toFixed(6)}
+                {item.latitude.toFixed(6)}, {item.longitude.toFixed(6)}
               </Text>
               <Text style={styles.itemSubtitle}>
-                Precisão: {item.accuracy.toFixed(2)}m
+                Precisão: {item.accuracy?.toFixed(2)}m
               </Text>
               <Text style={styles.itemTime}>
                 {new Date(item.timestamp).toLocaleString('pt-BR')}
               </Text>
             </View>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.deleteButton}
               onPress={() => deleteLocationRecord(item.id)}
             >
-              <Text style={styles.deleteButtonText}>🗑️</Text>
+              <Text style={styles.deleteButtonText}>X</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -303,7 +152,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: 'rgb(135, 14, 93)',
+    color: '#1f7a3f',
     textAlign: 'center',
   },
   subtitle: {
@@ -314,7 +163,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   button: {
-    backgroundColor: '#880959',
+    backgroundColor: '#2563eb',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -328,7 +177,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-<<<<<<< HEAD
   locationBox: {
     backgroundColor: '#fff',
     padding: 15,
@@ -341,27 +189,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
-=======
-  historyTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 12,
-  },
-  locationItem: {
-    backgroundColor: '#fff',
-    padding: 12,
-    marginBottom: 8,
-    borderRadius: 8,
-    elevation: 2,
-  },
-  locationInfo: {
-    marginBottom: 8,
-  },
-  locationName: {
-    fontSize: 14,
-    fontWeight: '500',
->>>>>>> 8641b9dd8730f75bed3b36c96e0fe45013467930
     color: '#333',
   },
   locationText: {
@@ -369,19 +196,6 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     color: '#666',
     fontFamily: 'monospace',
-  },
-<<<<<<< HEAD
-  errorBox: {
-    backgroundColor: '#ffebee',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 15,
-    borderLeftWidth: 4,
-    borderLeftColor: '#f44336',
-  },
-  errorText: {
-    color: '#c62828',
-    fontSize: 14,
   },
   locationItem: {
     backgroundColor: '#fff',
@@ -420,32 +234,8 @@ const styles = StyleSheet.create({
   },
   deleteButtonText: {
     fontSize: 18,
-=======
-  locationActions: {
-    flexDirection: 'row',
-    gap: 6,
-    flexWrap: 'wrap',
-  },
-  actionButton: {
-    backgroundColor: '#607D8B',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 6,
-  },
-  actionButtonText: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: '600',
->>>>>>> 8641b9dd8730f75bed3b36c96e0fe45013467930
-  },
-  shareButton: {
-    backgroundColor: '#388E3C',
-  },
-  mapsButton: {
-    backgroundColor: '#E65100',
-  },
-  deleteButton: {
-    backgroundColor: '#f44336',
+    color: '#f44336',
+    fontWeight: 'bold',
   },
   emptyText: {
     textAlign: 'center',
