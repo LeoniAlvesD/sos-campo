@@ -1,3 +1,6 @@
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
+import { theme } from '@/constants/theme';
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -6,20 +9,21 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
+
+interface IMCResult {
+  imc: number;
+  classificacao: string;
+  recomendacao: string;
+  cor: string;
+}
 
 export default function CalculadoraIMC() {
   const [peso, setPeso] = useState('');
   const [altura, setAltura] = useState('');
   const [erro, setErro] = useState('');
-  const [resultado, setResultado] = useState<{
-    imc: number;
-    classificacao: string;
-    recomendacao: string;
-    cor: string;
-  } | null>(null);
+  const [resultado, setResultado] = useState<IMCResult | null>(null);
 
   const calcular = () => {
     const p = parseFloat(peso.replace(',', '.'));
@@ -37,28 +41,24 @@ export default function CalculadoraIMC() {
 
     let classificacao = '';
     let recomendacao = '';
-    let cor = '#999';
+    let cor = theme.colors.muted;
 
     if (imc < 18.5) {
       classificacao = 'Abaixo do peso';
-      recomendacao =
-        'Busque orientação profissional para avaliação adequada.';
-      cor = '#f39c12';
+      recomendacao = 'Busque orientação profissional para avaliação adequada.';
+      cor = theme.colors.warning;
     } else if (imc < 25) {
       classificacao = 'Peso normal';
-      recomendacao =
-        'Mantenha hábitos saudáveis e prática regular de atividades físicas.';
-      cor = '#2ecc71';
+      recomendacao = 'Mantenha hábitos saudáveis e prática regular de atividades físicas.';
+      cor = theme.colors.success;
     } else if (imc < 30) {
       classificacao = 'Sobrepeso';
-      recomendacao =
-        'Considere ajustes na alimentação e rotina de exercícios.';
-      cor = '#e67e22';
+      recomendacao = 'Considere ajustes na alimentação e rotina de exercícios.';
+      cor = theme.colors.sobrepeso;
     } else {
       classificacao = 'Obesidade';
-      recomendacao =
-        'Procure acompanhamento profissional para avaliação individualizada.';
-      cor = '#e74c3c';
+      recomendacao = 'Procure acompanhamento profissional para avaliação individualizada.';
+      cor = theme.colors.danger;
     }
 
     setResultado({ imc, classificacao, recomendacao, cor });
@@ -76,70 +76,68 @@ export default function CalculadoraIMC() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView showsVerticalScrollIndicator={false}>
-
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.scrollContent}
+      >
         <Text style={styles.title}>Calculadora de IMC</Text>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Peso (kg)</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={peso}
-            onChangeText={setPeso}
-            placeholder="Ex: 80"
-          />
-        </View>
+        <Input
+          label="Peso (kg)"
+          keyboardType="numeric"
+          value={peso}
+          onChangeText={setPeso}
+          placeholder="Ex: 80"
+          accessibilityLabel="Peso em quilogramas"
+          returnKeyType="next"
+        />
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Altura (m)</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={altura}
-            onChangeText={setAltura}
-            placeholder="Ex: 1.70"
-          />
-        </View>
+        <Input
+          label="Altura (m)"
+          keyboardType="numeric"
+          value={altura}
+          onChangeText={setAltura}
+          placeholder="Ex: 1.70"
+          accessibilityLabel="Altura em metros"
+          returnKeyType="done"
+          onSubmitEditing={calcular}
+          error={erro || undefined}
+        />
 
-        {erro ? <Text style={styles.erro}>{erro}</Text> : null}
-
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            pressed && styles.buttonPressed,
-          ]}
+        <Button
+          label="Calcular IMC"
+          variant="primary"
+          size="lg"
           onPress={calcular}
-        >
-          <Text style={styles.buttonText}>Calcular IMC</Text>
-        </Pressable>
+          style={styles.calculateButton}
+        />
 
         {resultado && (
           <View style={[styles.resultCard, { borderLeftColor: resultado.cor }]}>
-            <Text style={styles.imcValue}>
-              {resultado.imc.toFixed(2)}
-            </Text>
+            <Text style={styles.imcValue}>{resultado.imc.toFixed(2)}</Text>
 
-            <Text
-              style={[styles.classificacao, { color: resultado.cor }]}
-            >
+            <Text style={[styles.classificacao, { color: resultado.cor }]}>
               {resultado.classificacao}
             </Text>
 
-            <Text style={styles.recomendacao}>
-              {resultado.recomendacao}
-            </Text>
+            <Text style={styles.recomendacao}>{resultado.recomendacao}</Text>
 
             <Text style={styles.disclaimer}>
               Este cálculo é informativo e não substitui avaliação profissional.
             </Text>
 
-            <Pressable onPress={limpar} style={styles.clearButton}>
+            <Pressable
+              onPress={limpar}
+              style={styles.clearButton}
+              accessibilityRole="button"
+              accessibilityLabel="Limpar resultados"
+              hitSlop={theme.hitSlop}
+            >
               <Text style={styles.clearText}>Limpar</Text>
             </Pressable>
           </View>
         )}
-
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -148,108 +146,77 @@ export default function CalculadoraIMC() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f4f7',
-    paddingHorizontal: 24,
-    paddingTop: 40,
+    backgroundColor: theme.colors.background,
+  },
+
+  scrollContent: {
+    paddingHorizontal: theme.spacing.lg,
+    paddingTop: theme.spacing.xl,
+    paddingBottom: theme.spacing.xxl,
   },
 
   title: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: theme.font.title,
+    fontWeight: theme.fontWeights.bold,
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: theme.spacing.xl,
+    color: theme.colors.text,
   },
 
-  inputGroup: {
-    marginBottom: 20,
-  },
-
-  label: {
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#374151',
-  },
-
-  input: {
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-  },
-
-  button: {
-    backgroundColor: '#1f7a3f',
-    borderRadius: 18,
-    paddingVertical: 18,
-    marginTop: 10,
-    alignItems: 'center',
-  },
-
-  buttonPressed: {
-    transform: [{ scale: 0.97 }],
-    opacity: 0.9,
-  },
-
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-
-  erro: {
-    color: '#e74c3c',
-    marginBottom: 10,
+  calculateButton: {
+    marginTop: theme.spacing.sm,
+    borderRadius: theme.radius.lg,
   },
 
   resultCard: {
-    marginTop: 30,
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 24,
+    marginTop: theme.spacing.xl,
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.radius.lg,
+    padding: theme.spacing.lg,
     borderLeftWidth: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 5,
+    ...theme.shadow.card,
   },
 
   imcValue: {
-    fontSize: 32,
-    fontWeight: '700',
+    fontSize: 36,
+    fontWeight: theme.fontWeights.extrabold,
     textAlign: 'center',
+    color: theme.colors.text,
   },
 
   classificacao: {
-    fontSize: 18,
+    fontSize: theme.font.md,
     textAlign: 'center',
-    marginTop: 6,
-    fontWeight: '600',
+    marginTop: theme.spacing.xs,
+    fontWeight: theme.fontWeights.semibold,
   },
 
   recomendacao: {
-    marginTop: 14,
-    fontSize: 15,
+    marginTop: theme.spacing.md,
+    fontSize: theme.font.body,
     textAlign: 'center',
-    color: '#4b5563',
+    color: theme.colors.textSecondary,
+    lineHeight: theme.lineHeights.relaxed,
   },
 
   disclaimer: {
-    marginTop: 18,
-    fontSize: 12,
+    marginTop: theme.spacing.md,
+    fontSize: theme.font.tiny,
     textAlign: 'center',
-    color: '#9ca3af',
+    color: theme.colors.placeholder,
+    lineHeight: theme.lineHeights.normal,
   },
 
   clearButton: {
-    marginTop: 20,
+    marginTop: theme.spacing.lg,
     alignItems: 'center',
+    minHeight: theme.minTouchSize,
+    justifyContent: 'center',
   },
 
   clearText: {
-    color: '#1f7a3f',
-    fontWeight: '600',
+    color: theme.colors.primary,
+    fontWeight: theme.fontWeights.semibold,
+    fontSize: theme.font.text,
   },
 });

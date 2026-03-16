@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { theme } from '@/constants/theme';
 
 interface LocationMarkerProps {
   location: string;
@@ -10,7 +11,12 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ location, onClick }) =>
   return (
     <View style={styles.marker}>
       <Text style={styles.title}>{location}</Text>
-      <TouchableOpacity style={styles.button} onPress={onClick}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={onClick}
+        accessibilityRole="button"
+        accessibilityLabel={`Ver localização: ${location}`}
+      >
         <Text style={styles.buttonText}>Ver Localização</Text>
       </TouchableOpacity>
     </View>
@@ -19,32 +25,31 @@ const LocationMarker: React.FC<LocationMarkerProps> = ({ location, onClick }) =>
 
 const styles = StyleSheet.create({
   marker: {
-    padding: 16,
-    marginVertical: 8,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    padding: theme.spacing.md,
+    marginVertical: theme.spacing.sm,
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.radius.md,
+    ...theme.shadow.sm,
   },
   title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#333',
+    fontSize: theme.font.text,
+    fontWeight: theme.fontWeights.bold,
+    marginBottom: theme.spacing.sm,
+    color: theme.colors.text,
   },
   button: {
-    backgroundColor: '#2196F3',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
+    backgroundColor: theme.colors.action,
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.sm,
+    minHeight: theme.minTouchSize,
+    justifyContent: 'center',
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: theme.colors.inverse,
+    fontWeight: theme.fontWeights.semibold,
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: theme.font.small,
   },
 });
 
