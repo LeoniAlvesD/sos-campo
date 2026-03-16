@@ -96,7 +96,7 @@ export default function Emergencia() {
             stripe
           />
           <EmergencyCard
-            label="Disque-Intoxicação"
+            label="Disq. Intoxicação"
             title="ANVISA"
             number="08007226001"
             displayNumber="0800 722 6001"
