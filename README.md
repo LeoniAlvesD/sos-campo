@@ -1,288 +1,287 @@
-# 🚑 SOS Campo
+# SOS CAMPO
 
-> **Orientação rápida e resgate de emergências no campo, com ou sem internet**
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-96.3%25-blue)](https://www.typescriptlang.org/)
-[![React Native](https://img.shields.io/badge/Built%20with-Expo-black.svg)](https://expo.dev)
+Orientacao rapida e resgate de emergencias no campo, com ou sem internet.
 
 ---
 
-## 📖 Sobre o Projeto
+## SOBRE O PROJETO
 
-**SOS Campo** é um aplicativo mobile educativo desenvolvido para **funcionar com ou sem internet**, permitindo que produtores rurais acessem informações críticas de primeiros socorros e emergências, mesmo em áreas com conectividade limitada.
+SOS Campo e um aplicativo mobile educativo desenvolvido para funcionar com ou sem internet, permitindo que produtores rurais acessem informacoes criticas de primeiros socorros e emergencias, mesmo em areas com conectividade limitada.
 
-### Por quê?
-- 🌾 **Ambiente Rural**: Regiões agrícolas frequentemente têm sinal fraco
-- 🏥 **Emergências**: Informações críticas precisam estar sempre disponíveis
-- ⏱️ **Tempo é Ouro**: Cada segundo conta em uma emergência
-- 📱 **Acessibilidade**: Interface clara e intuitiva para situações de stress
+Por que?
+- Ambiente Rural: Regioes agricolas frequentemente tem sinal fraco
+- Emergencias: Informacoes criticas precisam estar sempre disponiveis
+- Tempo e Ouro: Cada segundo conta em uma emergencia
+- Acessibilidade: Interface clara e intuitiva para situacoes de stress
 
 ---
 
-## ✨ Principais Funcionalidades
+## PRINCIPAIS FUNCIONALIDADES
 
-### 🆘 Primeiros Socorros
+PRIMEIROS SOCORROS
 - Guia ilustrado de primeiros socorros para acidentes comuns
 - Passos claros e objetivos
-- Avisos sobre o que **NÃO** fazer
-- Referências de fontes oficiais (Ministério da Saúde, ANVISA)
+- Avisos sobre o que NAO fazer
+- Referencias de fontes oficiais (Ministerio da Saude, ANVISA)
 
-### 📞 Emergências
+EMERGENCIAS
 Acesso direto a contatos essenciais:
-- **SAMU**: 192
-- **Bombeiros**: 193
-- **Polícia Militar**: 190
-- **Polícia Rodoviária Federal**: 191
-- **Disque Intoxicação (ANVISA)**: 0800 722 6001
+- SAMU: 192
+- Bombeiros: 193
+- Policia Militar: 190
+- Policia Rodoviaria Federal: 191
+- Disque Intoxicacao (ANVISA): 0800 722 6001
+- Ligar diretamente com um toque no botao
 
-### 📍 Compartilhamento de Localização
-- Obter GPS em alta precisão
-- Compartilhar coordenadas via:
-  - WhatsApp
-  - SMS
-  - Email
-  - Google Maps
-  - Waze
-  - Copiar para clipboard
+LOCALIZACAO INTEGRADA
+- Obter GPS em alta precisao (tela de Emergencia)
+- Exibir coordenadas precisas na tela
+- Link direto para abrir no Google Maps
+- Copiar coordenadas para clipboard
+- Compartilhar via Share API nativa do dispositivo
+- Historico completo de localizacoes (SQLite)
+- Acesso ao historico sem internet
 
-### 💾 Histórico Local
-- Armazenar localizações capturadas
-- Banco de dados SQLite local
-- Acessar sem internet
-- Sincronizar quando online
+CALCULADORA DE IMC
+- Ferramenta rapida para calculo
+- Facil interpretacao de resultados
 
-### 📊 Calculadora de IMC
-- Ferramenta rápida para cálculo
-- Fácil interpretação de resultados
-
-### 📋 Informações Legais
+INFORMACOES LEGAIS
 - Termos de Uso
-- Política de Privacidade
-- Fontes e Referências
+- Politica de Privacidade
+- Fontes e Referencias
 
 ---
 
-## 🏗️ Arquitetura
+## ARQUITETURA
 
-### Offline-First Design
-```
-┌─────────────────────────────────────┐
-│   CAMADA DE PERSISTÊNCIA LOCAL      │
-├─────────────────────────────────────┤
-│                                     │
-│  🗄️ AsyncStorage                   │
-│     └─ Armazenamento simples        │
-│        (localização recente)        │
-│                                     │
-│  🗄️ SQLite Database                │
-│     └─ Histórico de localizações   │
-│        └─ CRUD completo             │
-│                                     │
-│  📄 Constants (Bundled)            │
-│     └─ Primeiros socorros          │
-│     └─ Números de emergência       │
-│     └─ Dados estáticos             │
-│                                     │
-└─────────────────────────────────────┘
-         ⬇️ COM INTERNET ⬇️
-┌─────────────────────────────────────┐
-│   COMPARTILHAMENTO & SERVIÇOS       │
-├─────────────────────────────────────┤
-│                                     │
-│  📱 WhatsApp / SMS / Email         │
-│  🗺️  Google Maps / Waze            │
-│  📤 Share API Nativa               │
-│                                     │
-└─────────────────────────────────────┘
-```
+OFFLINE-FIRST DESIGN
 
-### Tech Stack
+CAMADA DE PERSISTENCIA LOCAL
 
-| Tecnologia | Versão | Propósito |
-|-----------|--------|----------|
-| **React Native** | v0.76+ | Framework mobile |
-| **Expo** | Latest | Runtime & Build |
-| **Expo Router** | Latest | Navegação |
-| **TypeScript** | 5.0+ | Type safety (96.3%) |
-| **SQLite** | expo-sqlite | Persistência local |
-| **AsyncStorage** | @react-native-async-storage | Cache rápido |
-| **Expo Location** | Latest | Serviços de GPS |
+AsyncStorage
+- Armazenamento rapido de localizacao recente
+- Acesso instantaneo sem banco de dados
+
+SQLite Database
+- Historico completo de localizacoes capturadas
+- CRUD completo (Create, Read, Update, Delete)
+- Acesso total sem internet
+- Timestamps de cada captura
+
+Constants (Bundled)
+- Primeiros socorros
+- Numeros de emergencia
+- Dados estaticos do app
+- Design system centralizado
+
+COM INTERNET (Na tela de Emergencia)
+
+Acesso a Servicos de Mapas
+
+Google Maps (abrir localizacao em mapa)
+Share API Nativa (WhatsApp, SMS, Email, etc - conforme apps instalados)
 
 ---
 
-## 📂 Estrutura do Projeto
+## TECH STACK
 
-```
+Tecnologia         Versao      Proposito
+React Native       v0.76+      Framework mobile
+Expo               Latest      Runtime e Build
+Expo Router        Latest      Navegacao
+TypeScript         5.0+        Type safety
+SQLite             expo-sqlite Persistencia local
+AsyncStorage       Latest      Cache rapido
+Expo Location      Latest      Servicos de GPS
+
+---
+
+## ESTRUTURA DO PROJETO
+
 sos-campo/
-├── app/                           # 📱 Telas (Expo Router)
-│   ├── _layout.tsx               # Layout raiz
-│   ├── SOS_Campo/                # Navegação principal (Tabs)
-│   │   ├── index.tsx             # Home
-│   │   ├── acidentes.tsx         # Primeiros socorros
-│   │   ├── emergencia.tsx        # Emergências & localização
-│   │   ├── calculadora.tsx       # IMC Calculator
-│   │   └── _layout.tsx           # Tab navigation
-│   ├── acidente/[id].tsx         # Detalhe do acidente
-│   └── legal/                    # Páginas legais
-│       ├── termos.tsx
-│       ├── privacidade.tsx
-│       └── fontes.tsx
-│
-├── components/                    # 🧩 Componentes Reutilizáveis
-│   ├── LocationShare.tsx         # Widget de localização
-│   ├── ShareLocationModal.tsx    # Modal de compartilhamento
-│   └── ...
-│
-├── hooks/                         # 🎣 Custom Hooks
-│   ├── useLocationDatabase.ts    # SQLite CRUD
-│   ├── useResponsive.ts          # Responsividade
-│   └── ...
-│
-├── utils/                         # 🔧 Utilitários
-│   ├── locationStorage.ts        # AsyncStorage helpers
-│   ├── locationSharing.ts        # Compartilhamento
-│   └── ...
-│
-├── constants/                     # 📌 Dados Estáticos
-│   ├── theme.ts                  # Design system
-│   ├── acidentes.ts              # DB de acidentes
-│   └── ...
-│
-├── assets/                        # 🖼️ Imagens & Ícones
-│   └── images/
-│
-├── app.json                       # Configuração Expo
-├── package.json                   # Dependências
-├── tsconfig.json                  # TypeScript config
-└── README.md                      # Esta documentação
-```
+
+app/                           Telas (Expo Router)
+- _layout.tsx                Layout raiz
+- SOS_Campo/                 Navegacao principal (Tabs)
+  - index.tsx               Home
+  - acidentes.tsx           Primeiros socorros
+  - emergencia.tsx          Emergencias, contatos e localizacao
+  - calculadora.tsx         IMC Calculator
+  - _layout.tsx             Tab navigation
+- acidente/[id].tsx         Detalhe do acidente
+- legal/                    Paginas legais
+  - termos.tsx
+  - privacidade.tsx
+  - fontes.tsx
+
+components/                    Componentes Reutilizaveis
+- LocationShare.tsx          Widget de localizacao (usado em Emergencia)
+- ShareLocationModal.tsx     Modal expandido (codigos preparados para futuro)
+- EmergencyCard.tsx          Card de contato de emergencia
+
+hooks/                        Custom Hooks
+- useLocationDatabase.ts     SQLite CRUD
+- useResponsive.ts           Responsividade
+
+utils/                        Utilitarios
+- locationStorage.ts         AsyncStorage helpers
+- locationSharing.ts         Funcoes de localizacao e compartilhamento
+
+constants/                    Dados Estaticos
+- theme.ts                  Design system
+- acidentes.ts              DB de acidentes
+
+assets/                       Imagens e Icones
+- images/
+
+app.json                      Configuracao Expo
+package.json                  Dependencias
+tsconfig.json                 TypeScript config
+README.md                     Esta documentacao
 
 ---
 
-## 🚀 Como Começar
+## COMO COMCAR
 
-### ✅ Pré-requisitos
-- **Node.js** 18+ ou **Yarn**
-- **Expo CLI** (opcional, usa npx)
-- **Mobile Device** com Expo Go instalado (ou emulador)
+PRE-REQUISITOS
+- Node.js 18+ ou Yarn
+- Expo CLI (opcional, usa npx)
+- Mobile Device com Expo Go instalado (ou emulador)
 
-### 📥 Instalação
+INSTALACAO
 
-1. **Clone o repositório**
-```bash
+1. Clone o repositorio
 git clone https://github.com/LeoniAlvesD/sos-campo.git
 cd sos-campo
-```
 
-2. **Instale dependências**
-```bash
+2. Instale dependencias
 npm install
-# ou
+ou
 yarn install
-```
 
-3. **Inicie o desenvolvimento**
-```bash
+3. Inicie o desenvolvimento
 npm start
-# ou
+ou
 npx expo start
-```
 
-4. **Visualize no seu dispositivo**
+4. Visualize no seu dispositivo
 
-**Opção 1: Expo Go** (Recomendado para testes)
+Opcao 1: Expo Go (Recomendado para testes)
 - Baixe o app "Expo Go" na Play Store ou App Store
 - Escaneie o QR code no terminal
 
-**Opção 2: Build Local**
-```bash
-# iOS (macOS apenas)
-npm run ios
-
-# Android
+Opcao 2: Build Local
+npm run ios        (macOS apenas)
 npm run android
-```
 
-### 🏗️ Build para Produção
+BUILD PARA PRODUCAO
 
-```bash
-# Build APK (Android)
+Build APK (Android)
 eas build --platform android --local
 
-# Build IPA (iOS)
+Build IPA (iOS)
 eas build --platform ios --local
 
-# Build Universal
+Build Universal
 eas build
-```
 
 ---
 
-## 💾 Persistência de Dados
+## FLUXO DE USO - EMERGENCIA
 
-### AsyncStorage
-Armazena dados simples e rápidos:
-```typescript
+1. Usuario aciona a aba "Emergencia"
+
+2. Ve todos os numeros de emergencia (SAMU, Bombeiros, Policia, etc)
+
+3. Pode ligar diretamente para qualquer numero
+   - Toca no card do numero desejado
+   - Telefone abre automaticamente a discagem
+   - Apenas pressiona "chamar" ou ativa o viva-voz
+
+4. Na secao "Sua Localizacao":
+   - Clica em "Obter Minha Localizacao"
+   - App solicita permissao de GPS (primeira vez)
+   - Captura coordenadas com alta precisao
+   - Exibe as coordenadas na tela
+   - Mostra link para Google Maps
+   - Salva no historico SQLite automaticamente
+
+5. Com as coordenadas capturadas, usuario pode:
+   - Clicar no link "Abrir no Google Maps" (requer internet)
+   - Botao "Copiar": copia coordenadas para clipboard
+   - Botao "Compartilhar": abre Share API nativa
+     (aparece WhatsApp, SMS, Email, etc conforme apps instalados)
+   - Botao "Limpar": remove coordenadas da tela
+   - Botao "Atualizar Localizacao": captura nova coordenada
+
+---
+
+## PERSISTENCIA DE DADOS
+
+ASYNCSTORAGE
+Armazena a localizacao mais recente capturada:
+
 import { saveLocation, getLocation } from '@/utils/locationStorage';
 
-// Salvar
+Salvar localizacao recente
 await saveLocation({ latitude: -15.7975, longitude: -47.8919 });
 
-// Recuperar
+Recuperar localizacao
 const location = await getLocation();
 
-// Remover
+Remover localizacao
 await removeLocation();
-```
 
-### SQLite (Histórico)
-Banco de dados local para histórico de localizações:
-```typescript
-import { createTable, insertLocation, getLocations } from '@/hooks/useLocationDatabase';
+SQLITE (HISTORICO DE LOCALIZACOES)
+Banco de dados local para historico completo:
 
-// Criar tabela (automático na primeira execução)
+import { createTable, insertLocation, getLocations, deleteLocation } from '@/hooks/useLocationDatabase';
+
+Criar tabela (automatico na primeira execucao)
 await createTable();
 
-// Inserir localização
+Inserir localizacao no historico
 await insertLocation(-15.7975, -47.8919, 10.5, new Date().toISOString());
 
-// Recuperar histórico
+Recuperar historico completo
 const locations = await getLocations();
+locations.forEach(loc => {
+  console.log(`${loc.latitude}, ${loc.longitude} - ${loc.timestamp}`);
+});
 
-// Deletar localização
+Deletar localizacao especifica
 await deleteLocation(locationId);
-```
 
 ---
 
-## 📝 Funcionalidades Offline vs Online
+## FUNCIONALIDADES OFFLINE VS ONLINE
 
-| Funcionalidade | Offline | Online |
-|---|---|---|
-| Ver primeiros socorros | ✅ | ✅ |
-| Acessar números de emergência | ✅ | ✅ |
-| Obter localização (GPS) | ✅ | ✅ |
-| Ver histórico de localizações | ✅ | ✅ |
-| Calcular IMC | ✅ | ✅ |
-| Compartilhar via WhatsApp | ❌ | ✅ |
-| Compartilhar via SMS/Email | ❌ | ✅ |
-| Abrir Google Maps/Waze | ❌ | ✅ |
-| Compartilhar via Share API | ❌ | ✅ |
+Funcionalidade                                  Offline Online
+Ver primeiros socorros                          Sim     Sim
+Acessar numeros de emergencia                   Sim     Sim
+Ligar para numero de emergencia                 Sim     Sim
+Obter localizacao (GPS)                         Sim     Sim
+Ver coordenadas                                 Sim     Sim
+Ver historico de localizacoes                   Sim     Sim
+Copiar coordenadas                              Sim     Sim
+Abrir Google Maps                               Nao     Sim
+Compartilhar via Share API (WhatsApp, etc)      Nao     Sim
+Calcular IMC                                    Sim     Sim
+Ver termos e politica de privacidade            Sim     Sim
 
 ---
 
-## 🎨 Design System
+## DESIGN SYSTEM
 
-Cores e espaçamento centralizados em `constants/theme.ts`:
+Cores e espacamento centralizados em constants/theme.ts:
 
-```typescript
 export const theme = {
   colors: {
-    primary: '#1F4D3A',      // Verde (principal)
-    secondary: '#FFFFFF',     // Branco
-    danger: '#DC2626',        // Vermelho (emergência)
-    emphasis: '#F59E0B',      // Laranja (destaque)
+    primary: '#1F4D3A',      Verde (principal)
+    secondary: '#FFFFFF',     Branco
+    danger: '#DC2626',        Vermelho (emergencia)
+    emphasis: '#F59E0B',      Laranja (destaque)
     background: '#F3F4F6',
   },
   spacing: {
@@ -294,216 +293,244 @@ export const theme = {
     text: 14,
   },
 };
-```
 
 ---
 
-## ♿ Acessibilidade
+## ACESSIBILIDADE
 
-✅ Implementada em todo o app:
-- **accessibilityLabel**: Descrições para leitores de tela
-- **accessibilityRole**: Identificação de elementos
-- **Cores contrastadas**: WCAG AA compliance
-- **Tamanho de fonte**: Legível em todos os dispositivos
-- **Touch targets**: Mínimo 44x44pt para toque
+Implementada em todo o app:
+- accessibilityLabel: Descricoes detalhadas para leitores de tela
+- accessibilityRole: Identificacao correta de elementos
+- Cores contrastadas: WCAG AA compliance
+- Tamanho de fonte: Legivel em todos os dispositivos
+- Touch targets: Minimo 44x44pt para toque comodo
+- Estados de carregamento: Indicadores visuais durante operacoes
 
 ---
 
-## 📚 Documentação de Dados
+## DOCUMENTACAO DE DADOS
 
-### Estrutura de Acidente
-```typescript
+ESTRUTURA DE ACIDENTE
+
 interface Acidente {
   id: string;
-  nome: string;                    // Ex: "Picada de cobra"
-  descricao: string;               // Descrição breve
-  passos: string[];                // Ações a tomar
-  naoFazer: string[];              // Avisos
-  referencias?: string;            // Links para mais info
+  nome: string;                    Ex: "Picada de cobra"
+  descricao: string;               Descricao breve
+  passos: string[];                Acoes a tomar
+  naoFazer: string[];              Avisos importantes
+  referencias?: string;            Links para mais info
 }
-```
 
-### Estrutura de Localização (SQLite)
-```typescript
+ESTRUTURA DE LOCALIZACAO (SQLITE)
+
 interface Location {
-  id: number;                      // PK Autoincrement
-  latitude: number;
-  longitude: number;
-  accuracy: number | null;         // Precisão em metros
-  timestamp: string;               // ISO 8601
+  id: number;                      PK Autoincrement
+  latitude: number;                Latitude GPS
+  longitude: number;               Longitude GPS
+  accuracy: number | null;         Precisao em metros
+  timestamp: string;               ISO 8601 timestamp
 }
-```
+
+ESTRUTURA DE CONTATO DE EMERGENCIA
+
+interface EmergencyContact {
+  label: string;                   Ex: "Atendimento Medico"
+  title: string;                   Ex: "SAMU"
+  number: string;                  Numero para ligar (string)
+  displayNumber?: string;          Numero formatado para exibir
+  color: string;                   Cor do card (#hexcolor)
+  stripe?: boolean;                Faixa PRF (amarela) opcional
+}
 
 ---
 
-## 🧪 Testes
+## TESTES
 
-Preparação para adicionar testes:
+Preparacao para adicionar testes:
 
-```bash
-# Instalação de dependências de teste
-npm install --save-dev jest @testing-library/react-native
+npm install --save-dev jest @testing-library/react-native @testing-library/jest-native
 
-# Executar testes
 npm test
-```
 
 ---
 
-## 🔒 Segurança & Privacidade
+## SEGURANCA E PRIVACIDADE
 
-✅ **Política de Privacidade**
-- Nenhum dado pessoal é coletado
-- Nenhuma informação é enviada para servidor
-- Tudo fica local no dispositivo
+POLITICA DE PRIVACIDADE
+- Nenhum dado pessoal e coletado
+- Nenhuma informacao e enviada para servidor
+- Tudo fica local no dispositivo do usuario
+- Historico de localizacoes fica armazenado localmente
+- Compartilhamento e completamente opcional
+- Usuario tem controle total sobre o que compartilha
 
-✅ **Conformidade**
-- Lei Geral de Proteção de Dados (LGPD)
-- Documentado em `/legal/privacidade.tsx`
+CONFORMIDADE
+- Lei Geral de Protecao de Dados (LGPD) - Brasil
+- Documentado em /legal/privacidade.tsx
+- Documentado em /legal/termos.tsx
 
----
-
-## 📱 Requisitos do Sistema
-
-### Android
-- Versão: 7.0+ (API 24+)
-- Permissões necessárias:
-  - `ACCESS_FINE_LOCATION`
-  - `ACCESS_COARSE_LOCATION`
-  - `CALL_PHONE`
-  - `SEND_SMS`
-
-### iOS
-- Versão: 14.0+
-- Permissões necessárias:
-  - `NSLocationWhenInUseUsageDescription`
-  - `NSPhotoLibraryUsageDescription`
+PERMISSOES NECESSARIAS
+- ACCESS_FINE_LOCATION: Solicitada apenas quando usuario clica em "Obter Localizacao"
+- ACCESS_COARSE_LOCATION: Fallback automatico
+- CALL_PHONE: Necessaria para ligar para numeros de emergencia
+- Nenhuma permissao de armazenamento de fotos
+- Nenhuma permissao de contatos
 
 ---
 
-## 🤝 Contribuindo
+## REQUISITOS DO SISTEMA
 
-Contribuições são bem-vindas! Para contribuir:
+ANDROID
+- Versao minima: 7.0+ (API 24+)
+- Recomendado: 10.0+ (API 29+)
+- Permissoes:
+  - ACCESS_FINE_LOCATION (GPS de alta precisao)
+  - ACCESS_COARSE_LOCATION (GPS aproximado)
+  - CALL_PHONE (ligar para emergencia)
 
-1. **Fork** o repositório
-2. Crie uma **branch** para sua feature (`git checkout -b feature/AmazingFeature`)
-3. **Commit** suas mudanças (`git commit -m 'Add AmazingFeature'`)
-4. **Push** para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um **Pull Request**
+IOS
+- Versao minima: 14.0+
+- Recomendado: 15.0+
+- Permissoes:
+  - NSLocationWhenInUseUsageDescription (GPS)
+  - NSPhotoLibraryUsageDescription (para compartilhamento)
 
-### Diretrizes
-- Mantenha o código em TypeScript (96.3%+)
+---
+
+## CONTRIBUINDO
+
+Contribuicoes sao bem-vindas! Para contribuir:
+
+1. Fork o repositorio
+2. Crie uma branch para sua feature (git checkout -b feature/AmazingFeature)
+3. Commit suas mudancas (git commit -m 'Add AmazingFeature')
+4. Push para a branch (git push origin feature/AmazingFeature)
+5. Abra um Pull Request
+
+DIRETRIZES
+- Mantenha o codigo em TypeScript (96.3%+)
 - Adicione testes para novas funcionalidades
-- Siga o padrão de commit convencional
-- Atualize a documentação
+- Siga o padrao de commit convencional
+- Atualize a documentacao quando necessario
+- Respeite a estrutura de design system
 
 ---
 
-## 🐛 Reportar Problemas
+## REPORTAR PROBLEMAS
 
-Encontrou um bug? Abra uma [issue](https://github.com/LeoniAlvesD/sos-campo/issues) com:
-- Descrição clara do problema
+Encontrou um bug? Abra uma issue com:
+- Descricao clara do problema
 - Passos para reproduzir
-- Versão do app e SO
-- Screenshots (se aplicável)
+- Versao do app (veja app.json)
+- Versao do SO (Android/iOS)
+- Screenshots (se aplicavel)
 
 ---
 
-## 📋 Roadmap
+## ROADMAP
 
-### ✅ v1.0 (Atual)
-- [x] Primeiros socorros
-- [x] Contatos de emergência
-- [x] Localização & compartilhamento
-- [x] Calculadora IMC
-- [x] Offline-first com SQLite
+v1.0 (Atual - Lancado)
+- Primeiros socorros completos
+- Contatos de emergencia (5 servicos)
+- Ligar direto para emergencia
+- Localizacao com GPS de alta precisao
+- Historico de localizacoes (SQLite)
+- Offline-first com SQLite e AsyncStorage
+- Acessibilidade implementada
+- Termos e politica de privacidade
 
-### 🔄 v1.1 (Próximas versões)
-- [ ] Detector de conexão (NetInfo)
-- [ ] Sincronização automática
-- [ ] Notificações push
-- [ ] Modo dark
-- [ ] Multi-idioma (i18n)
+v1.1 (Proximas semanas)
+- Compartilhamento expandido (WhatsApp, SMS, Email, Waze)
+- Detector de conexao (NetInfo)
+- Notificacoes locais de atualizacoes
+- Modo dark
+- Melhorias de performance
 
-### 🚀 v2.0 (Futuro)
-- [ ] Backend API
-- [ ] Autenticação
-- [ ] Cloud sync
-- [ ] Histórico na nuvem
-- [ ] Analytics anônimo
+v2.0 (Proximos meses)
+- Backend API para atualizacoes remotas
+- Autenticacao opcional
+- Cloud sync de historico
+- Analytics anonimo
+- Modo offline completo com dados versionados
+- Push notifications
+
+v3.0 (Futuro)
+- Integracao com central de emergencia
+- Compartilhamento automatico de localizacao
+- Deteccao de queda/acidente
+- Contacto de emergencia confiavel
+- Relatorios de historico
 
 ---
 
-## 📞 Suporte
+## SUPORTE
 
-- 📧 **Email**: leoni.sousa@discente.ufj.edu.br
-- 🐙 **GitHub Issues**: [Abra uma issue](https://github.com/LeoniAlvesD/sos-campo/issues)
-- 💬 **Discussões**: [GitHub Discussions](https://github.com/LeoniAlvesD/sos-campo/discussions)
+Email: leoni.sousa@discente.ufj.edu.br
 
 ---
 
-## 📜 Licença
+## LICENCA
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+Este projeto esta licenciado sob a Licenca MIT.
 
-```
 MIT License
 
 Copyright (c) 2024-2026 Leoni Alves
 
-Permissão é concedida, gratuitamente, a qualquer pessoa que obtenha uma cópia
-desta documentação e dos arquivos associados para usar, copiar, modificar, mesclar,
-publicar, distribuir, sublicenciar e/ou vender cópias, sujeito às seguintes condições...
-```
+Permissao e concedida, gratuitamente, a qualquer pessoa que obtenha uma copia
+desta documentacao e dos arquivos associados para usar, copiar, modificar, mesclar,
+publicar, distribuir, sublicenciar e/ou vender copias, sujeito as seguintes condicoes...
 
 ---
 
-## 👏 Créditos
+## CREDITOS
 
-### Desenvolvedor
-- **Leoni Alves** (@LeoniAlvesD) - Desenvolvedor principal
+DESENVOLVEDOR
+- Leoni Alves - Desenvolvedor principal
 
-### Tecnologias
-- [Expo](https://expo.dev)
-- [React Native](https://reactnative.dev)
-- [TypeScript](https://www.typescriptlang.org)
+TECNOLOGIAS
+- Expo
+- React Native
+- TypeScript
 
-### Referências
-- Ministério da Saúde - Noções de Primeiros Socorros
-- ANVISA - Informações sobre Peçonhentos
-- Documentação oficial do Expo & React Native
+REFERENCIAS
+- Ministerio da Saude - Nocoes de Primeiros Socorros
+- ANVISA - Informacoes sobre Peconhentos
+- Documentacao oficial do Expo e React Native
 
-### Projeto de Extensão
-Desenvolvido como projeto de extensão para o curso de **Engenharia de Software** pela **UNOPAR EAD**.
-
----
-
-## 📊 Status do Projeto
-
-```
-├─ Funcionalidade     : ✅ 100%
-├─ Testes            : ⚠️  0% (Próxima prioridade)
-├─ Documentação      : ✅ 95%
-├─ TypeScript        : ✅ 96.3%
-├─ Acessibilidade    : ✅ Implementada
-└─ Offline-First     : ✅ Completo
-```
+PROJETO DE EXTENSAO
+Desenvolvido como projeto de extensao para o curso de Engenharia de Software pela UNOPAR EAD.
 
 ---
 
-## 📈 Estatísticas
+## STATUS DO PROJETO
 
-- **Linguagem Principal**: TypeScript (96.3%)
-- **Linhas de Código**: ~2000+
-- **Commits**: 20+
-- **Componentes**: 10+
-- **Telas**: 8
-- **Hooks Customizados**: 3+
+Funcionalidade     : 100%
+Testes            : 0% (Proxima prioridade)
+Documentacao      : 98%
+TypeScript        : 96.3%
+Acessibilidade    : Implementada
+Offline-First     : Completo
+Persistencia      : SQLite + AsyncStorage
+GPS e Mapas       : Google Maps + Historico
+
+---
+
+## ESTATISTICAS
+
+- Linguagem Principal: TypeScript (96.3%)
+- Linhas de Codigo: 2000+
+- Commits: 20+
+- Componentes: 10+
+- Telas: 8
+- Hooks Customizados: 3+
+- Banco de Dados Local: SQLite + AsyncStorage
+- Servicos de GPS: Expo Location (alta precisao)
 
 ---
 
-**Última atualização**: 2026-03-17
+Ultima atualizacao: 2026-03-17
 
----
+Com amor para produtores rurais do Brasil
 
 > **Com ❤️ para produtores rurais do Brasil**
