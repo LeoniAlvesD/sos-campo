@@ -81,6 +81,11 @@ export default function LocationShare({ title = 'Compartilhar Localização' }: 
     }
   };
 
+  const clearLocation = () => {
+    setCoords(null);
+    setError(null);
+  };
+
   const openMaps = () => {
     if (!mapsUrl) return;
     Linking.openURL(mapsUrl).catch(() =>
@@ -134,6 +139,19 @@ export default function LocationShare({ title = 'Compartilhar Localização' }: 
           </Text>
         )}
       </TouchableOpacity>
+
+      {coords && (
+        <TouchableOpacity
+          style={[styles.clearButton, loading && styles.buttonDisabled]}
+          onPress={clearLocation}
+          disabled={loading}
+          accessibilityRole="button"
+          accessibilityLabel="Limpar localização"
+          accessibilityState={{ disabled: loading }}
+        >
+          <Text style={styles.clearButtonText}>Limpar Localização</Text>
+        </TouchableOpacity>
+      )}
 
       {coords && (
         <View style={styles.actionsRow}>
@@ -247,6 +265,23 @@ const styles = StyleSheet.create({
 
   primaryButtonText: {
     color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+
+  clearButton: {
+    backgroundColor: theme.colors.inverse,
+    height: 48,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+    borderWidth: 1.5,
+    borderColor: theme.colors.danger,
+  },
+
+  clearButtonText: {
+    color: theme.colors.danger,
     fontSize: 15,
     fontWeight: '600',
   },
