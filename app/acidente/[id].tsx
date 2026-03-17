@@ -1,9 +1,8 @@
 import { acidentes } from '@/constants/acidentes';
 import { theme } from '@/constants/theme';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import {
   Image,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -27,17 +26,6 @@ export default function DetalheAcidente() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-
-        <View style={styles.headerTop}>
-          <Pressable
-            onPress={() => router.back()}
-            hitSlop={theme.hitSlop}
-            accessibilityRole="button"
-            accessibilityLabel="Voltar"
-          >
-            <Text style={styles.backArrow}>← Voltar</Text>
-          </Pressable>
-        </View>
 
         {/* AVISO LEGAL SUPERIOR */}
         <View style={styles.disclaimerBox}>
@@ -104,16 +92,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     paddingHorizontal: theme.spacing.lg,
     paddingTop: theme.spacing.xl,
-  },
-
-  headerTop: {
-    marginBottom: theme.spacing.sm,
-  },
-
-  backArrow: {
-    fontSize: theme.font.text,
-    color: theme.colors.primary,
-    fontWeight: theme.fontWeights.semibold,
   },
 
   disclaimerBox: {
