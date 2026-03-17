@@ -1,3 +1,6 @@
+import { theme } from '@/constants/theme';
+import * as Clipboard from 'expo-clipboard';
+import * as Location from 'expo-location';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -9,9 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import * as Clipboard from 'expo-clipboard';
-import * as Location from 'expo-location';
-import { theme } from '@/constants/theme';
 
 interface Coords {
   latitude: number;
@@ -59,6 +59,11 @@ export default function LocationShare({ title = 'Compartilhar Localização' }: 
     } finally {
       setLoading(false);
     }
+  };
+
+  const clearLocation = () => {
+    setCoords(null);
+    setError(null);
   };
 
   const copyToClipboard = async () => {
@@ -152,12 +157,12 @@ export default function LocationShare({ title = 'Compartilhar Localização' }: 
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.actionBtn, styles.actionBtnMaps]}
-            onPress={openMaps}
+            style={[styles.actionBtn, styles.actionBtnClear]}
+            onPress={clearLocation}
             accessibilityRole="button"
-            accessibilityLabel="Abrir no Maps"
+            accessibilityLabel="Limpar localização"
           >
-            <Text style={styles.actionBtnText} numberOfLines={1}>Maps</Text>
+            <Text style={[styles.actionBtnText, styles.actionBtnTextDark]} numberOfLines={1}>Limpar</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -269,8 +274,8 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primary,
   },
 
-  actionBtnMaps: {
-    backgroundColor: '#EA580C',
+  actionBtnClear: {
+    backgroundColor: '#FEE2E2',
   },
 
   actionBtnText: {

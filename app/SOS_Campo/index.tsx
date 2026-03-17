@@ -31,8 +31,8 @@ function NavButton({ title, description, color, onPress, accessibilityLabel }: N
       ]}
       onPress={onPress}
     >
-      <Text style={styles.buttonTitle}>{title}</Text>
-      <Text style={styles.buttonDescription}>{description}</Text>
+      <Text style={styles.buttonTitle} numberOfLines={2}>{title}</Text>
+      <Text style={styles.buttonDescription} numberOfLines={3}>{description}</Text>
     </Pressable>
   );
 }
@@ -134,6 +134,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: theme.spacing.lg,
     paddingBottom: theme.spacing.xxl,
+    paddingTop: theme.spacing.lg,
   },
 
   header: {
@@ -165,15 +166,17 @@ const styles = StyleSheet.create({
 
   buttonsContainer: {
     marginTop: theme.spacing.sm,
+    gap: theme.spacing.md,
   },
 
   button: {
     width: '100%',
     borderRadius: theme.radius.xl,
-    paddingVertical: theme.spacing.lg - 2,
+    paddingVertical: theme.spacing.lg,
     paddingHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing.md + 2,
-    minHeight: theme.minTouchSize,
+    marginBottom: 0,
+    minHeight: 100,
+    justifyContent: 'center',
     ...theme.shadow.card,
   },
 
@@ -183,13 +186,14 @@ const styles = StyleSheet.create({
   },
 
   buttonTitle: {
-    color: theme.colors.inverse,
+    color: '#FFFFFF',
     fontSize: theme.font.md,
     fontWeight: theme.fontWeights.bold,
+    marginBottom: theme.spacing.xs,
   },
 
   buttonDescription: {
-    color: 'rgba(255,255,255,0.80)',
+    color: '#FFFFFF',
     marginTop: theme.spacing.xs,
     fontSize: theme.font.small,
     lineHeight: theme.lineHeights.normal,
