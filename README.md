@@ -529,8 +529,6 @@ GPS e Mapas       : Google Maps + Historico
 
 ---
 
-Ultima atualizacao: 2026-03-17
-
-Com amor para produtores rurais do Brasil
+Ultima atualizacao: 2026-03-16
 
 > **Com reponsabilidade para trabalhadores e produtores rurais do Brasil**
