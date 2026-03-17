@@ -1,80 +1,36 @@
-# SOS Campo 🚨
+# sos-campo
 
-Um aplicativo mobile de emergência e primeiros socorros desenvolvido para **áreas rurais e comunidades afastadas**.
+## Features
+- Feature 1: Detailed description of feature 1.
+- Feature 2: Detailed description of feature 2.
+- Feature 3: Detailed description of feature 3.
 
-## 📱 Sobre o Projeto
+## Benefits
+- Benefit 1: Explanation of how this benefit helps the user.
+- Benefit 2: Explanation of how this benefit helps the user.
+- Benefit 3: Explanation of how this benefit helps the user.
 
-O **SOS Campo** oferece informações rápidas e práticas sobre como agir em situações de emergência.
+## Requirements
+- **Node.js** (version X.X.X or higher)
+- **npm** (version X.X.X or higher)
 
-### Funcionalidades:
-- 🩹 **Primeiros Socorros**: Instruções passo a passo
-- 🏥 **Guias de Emergência**: O que fazer antes da ambulância chegar
-- 📚 **Educação em Saúde**: Dicas preventivas
-- 🔍 **Interface Intuitiva**: Fácil de usar em situações de stress
+## Installation Instructions
+1. Clone the repository to your local machine:
+   ```bash
+   git clone https://github.com/LeoniAlvesD/sos-campo.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd sos-campo
+   ```
+3. Install the required dependencies:
+   ```bash
+   npm install
+   ```
 
-## 🎯 Acidentes Cobertos
+## Project Details
+- **Maintainer**: LeoniAlvesD
+- **License**: MIT
+- **Version**: 1.0.0
 
-- Picada de cobra/animais peçonhentos
-- Choque elétrico
-- Fratura
-- Hemorragia
-- Insolação
-- Intoxicação
-- Queimadura
-- Trauma de máquina
-
-## 🛠️ Tecnologias Utilizadas
-
-- **React Native** com Expo
-- **TypeScript** para type safety
-- **Expo Router** para navegação
-
-## 📋 Pré-requisitos
-
-- Node.js 16+
-- Expo CLI: `npm install -g expo-cli`
-
-## 🚀 Como Instalar e Rodar
-
-```bash
-git clone https://github.com/LeoniAlvesD/sos-campo-novo.git
-cd sos-campo-novo
-npm install
-npm start
-```
-
-Escaneie o QR code com o app **Expo Go** no seu celular!
-
-## 📁 Estrutura do Projeto
-
-```
-sos-campo-novo/
-├── app/                  # Telas e rotas
-├── components/           # Componentes reutilizáveis
-├── constants/            # Constantes e temas
-├── assets/images/        # Imagens e ícones
-└── hooks/                # Custom hooks
-```
-
-## 🤝 Como Contribuir
-
-1. Faça um fork do projeto
-2. Crie uma branch: `git checkout -b feature/sua-feature`
-3. Commit: `git commit -m 'Add feature'`
-4. Push: `git push origin feature/sua-feature`
-5. Abra um Pull Request
-
-## 📧 Contato
-
-**Desenvolvedor**: Leoni Alves D  
-**GitHub**: [@LeoniAlvesD](https://github.com/LeoniAlvesD)
-
-## ⚠️ Importante
-
-Este app é **informativo**. Em emergências reais, sempre busque ajuda médica profissional:
-- **Ambulância**: 192
-- **Corpo de Bombeiros**: 193
-
----
-
-**Desenvolvido com responsabilidade para salvar vidas em áreas rurais**: Chat with Expo users and ask questions.
+For further information, visit the [project page](https://github.com/LeoniAlvesD/sos-campo).
