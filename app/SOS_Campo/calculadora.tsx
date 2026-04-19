@@ -66,6 +66,23 @@ export default function CalculadoraIMC() {
     setResultado({ imc, classificacao, recomendacao, cor });
   };
 
+  const formatarAltura = (valor: string) => {
+    const temSeparador = valor.includes(',') || valor.includes('.');
+    if (temSeparador) {
+      const normalizado = valor.replace(/\./g, ',');
+      const parts = normalizado.split(',');
+      const inteiro = parts[0].replace(/\D/g, '');
+      const dec = parts.slice(1).join('').replace(/\D/g, '').slice(0, 2);
+      return `${inteiro}${dec ? `,${dec}` : ','}`;
+    }
+
+    const digits = valor.replace(/\D/g, '');
+    if (digits.length < 3) return digits;
+    const inteiro = digits.slice(0, -2);
+    const dec = digits.slice(-2);
+    return `${inteiro},${dec}`;
+  };
+
   const limpar = () => {
     setPeso('');
     setAltura('');
@@ -114,8 +131,8 @@ export default function CalculadoraIMC() {
           label="Altura (m)"
           keyboardType="numeric"
           value={altura}
-          onChangeText={setAltura}
-          placeholder="Ex: 1.70"
+          onChangeText={(texto) => setAltura(formatarAltura(texto))}
+          placeholder="Ex: 1,70"
           accessibilityLabel="Altura em metros"
           returnKeyType="done"
           onSubmitEditing={calcular}
